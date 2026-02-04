@@ -1,0 +1,99 @@
+{
+  "name": "ticketkit",
+  "version": "0.1.0",
+  "description": "Lightweight SDK for building ticket/task management systems (Trello, Asana, Jira, Zendesk alternatives)",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "demo.js",
+    "docs.html",
+    "docs/",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "CODE_OF_CONDUCT.md",
+    "SECURITY.md",
+    "CONTRIBUTING.md",
+    "screenshot-*.svg"
+  ],
+  "scripts": {
+    "demo": "node demo.js",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:ci": "jest --ci --coverage --maxWorkers=2",
+    "prepublishOnly": "npm run test"
+  },
+  "keywords": [
+    "tickets",
+    "tasks",
+    "kanban",
+    "trello",
+    "asana",
+    "jira",
+    "zendesk",
+    "project-management",
+    "workflow",
+    "sdk",
+    "task-management",
+    "issue-tracking",
+    "bug-tracker",
+    "scrum",
+    "agile",
+    "board",
+    "sqlite",
+    "workflow-engine",
+    "ticket-system",
+    "project-tracker"
+  ],
+  "author": "Kiara Lab",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kiara-01-Lab/ticket.api-public.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Kiara-01-Lab/ticket.api-public/issues"
+  },
+  "homepage": "https://github.com/Kiara-01-Lab/ticket.api-public#readme",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "nanoid": "^5.1.6",
+    "sql.js": "^1.13.0",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.28.6",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": [
+      "index.js",
+      "!node_modules/**",
+      "!coverage/**",
+      "!demo.js"
+    ],
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!(nanoid|uuid)/)"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 50,
+        "functions": 50,
+        "lines": 50,
+        "statements": 50
+      }
+    }
+  }
+}

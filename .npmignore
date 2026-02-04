@@ -1,0 +1,35 @@
+# Development files
+HANDOFF.md
+.DS_Store
+.gitignore
+.git/
+.github/
+_archived/
+scripts/
+tests/
+babel.config.js
+
+# Test databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Node modules (will be installed by users)
+node_modules/
+
+# Misc
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Keep only what's needed for the package
+# Everything not explicitly listed in package.json "files" is excluded

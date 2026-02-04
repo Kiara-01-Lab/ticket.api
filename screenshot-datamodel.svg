@@ -1,0 +1,162 @@
+<svg width="800" height="450" viewBox="0 0 800 450" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="450" rx="12" fill="#FAFAF8"/>
+  
+  <!-- Title -->
+  <text x="400" y="35" font-family="system-ui, sans-serif" font-size="18" font-weight="600" fill="#1F1E1C" text-anchor="middle">Data Model</text>
+  
+  <!-- Board Entity -->
+  <rect x="50" y="70" width="200" height="180" rx="8" fill="white" stroke="#0E7C6B" stroke-width="2"/>
+  <rect x="50" y="70" width="200" height="35" rx="8" fill="#0E7C6B"/>
+  <rect x="50" y="93" width="200" height="12" fill="#0E7C6B"/>
+  <text x="150" y="95" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="white" text-anchor="middle">Board</text>
+  
+  <text x="65" y="130" font-family="monospace" font-size="11" fill="#5C5A55">id</text>
+  <text x="200" y="130" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">string</text>
+  
+  <text x="65" y="150" font-family="monospace" font-size="11" fill="#5C5A55">name</text>
+  <text x="200" y="150" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">string</text>
+  
+  <text x="65" y="170" font-family="monospace" font-size="11" fill="#5C5A55">description</text>
+  <text x="200" y="170" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">string</text>
+  
+  <text x="65" y="190" font-family="monospace" font-size="11" fill="#1565C0">workflow_id</text>
+  <text x="200" y="190" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">→ Workflow</text>
+  
+  <text x="65" y="210" font-family="monospace" font-size="11" fill="#5C5A55">created_at</text>
+  <text x="200" y="210" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">datetime</text>
+  
+  <line x1="65" y1="225" x2="235" y2="225" stroke="#E0E0DD" stroke-width="1"/>
+  <text x="150" y="243" font-family="system-ui, sans-serif" font-size="10" fill="#8C8A85" text-anchor="middle">has many Tickets</text>
+  
+  <!-- Ticket Entity -->
+  <rect x="300" y="70" width="200" height="320" rx="8" fill="white" stroke="#1565C0" stroke-width="2"/>
+  <rect x="300" y="70" width="200" height="35" rx="8" fill="#1565C0"/>
+  <rect x="300" y="93" width="200" height="12" fill="#1565C0"/>
+  <text x="400" y="95" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="white" text-anchor="middle">Ticket</text>
+  
+  <text x="315" y="130" font-family="monospace" font-size="11" fill="#5C5A55">id</text>
+  <text x="450" y="130" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">string</text>
+  
+  <text x="315" y="150" font-family="monospace" font-size="11" fill="#0E7C6B">board_id</text>
+  <text x="450" y="150" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">→ Board</text>
+  
+  <text x="315" y="170" font-family="monospace" font-size="11" fill="#5C5A55">title</text>
+  <text x="450" y="170" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">string</text>
+  
+  <text x="315" y="190" font-family="monospace" font-size="11" fill="#5C5A55">description</text>
+  <text x="450" y="190" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">string</text>
+  
+  <text x="315" y="210" font-family="monospace" font-size="11" fill="#5C5A55">status</text>
+  <text x="450" y="210" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">string</text>
+  
+  <text x="315" y="230" font-family="monospace" font-size="11" fill="#5C5A55">priority</text>
+  <text x="450" y="230" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">enum</text>
+  
+  <text x="315" y="250" font-family="monospace" font-size="11" fill="#5C5A55">labels</text>
+  <text x="450" y="250" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">string[]</text>
+  
+  <text x="315" y="270" font-family="monospace" font-size="11" fill="#5C5A55">assignees</text>
+  <text x="450" y="270" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">string[]</text>
+  
+  <text x="315" y="290" font-family="monospace" font-size="11" fill="#7B1FA2">parent_id</text>
+  <text x="450" y="290" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">→ Ticket?</text>
+  
+  <text x="315" y="310" font-family="monospace" font-size="11" fill="#5C5A55">custom_fields</text>
+  <text x="450" y="310" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">object</text>
+  
+  <text x="315" y="330" font-family="monospace" font-size="11" fill="#5C5A55">due_date</text>
+  <text x="450" y="330" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">datetime?</text>
+  
+  <text x="315" y="350" font-family="monospace" font-size="11" fill="#5C5A55">created_at</text>
+  <text x="450" y="350" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">datetime</text>
+  
+  <text x="315" y="370" font-family="monospace" font-size="11" fill="#5C5A55">updated_at</text>
+  <text x="450" y="370" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">datetime</text>
+  
+  <!-- Workflow Entity -->
+  <rect x="50" y="280" width="200" height="140" rx="8" fill="white" stroke="#7B1FA2" stroke-width="2"/>
+  <rect x="50" y="280" width="200" height="35" rx="8" fill="#7B1FA2"/>
+  <rect x="50" y="303" width="200" height="12" fill="#7B1FA2"/>
+  <text x="150" y="305" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="white" text-anchor="middle">Workflow</text>
+  
+  <text x="65" y="340" font-family="monospace" font-size="11" fill="#5C5A55">id</text>
+  <text x="200" y="340" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">string</text>
+  
+  <text x="65" y="360" font-family="monospace" font-size="11" fill="#5C5A55">name</text>
+  <text x="200" y="360" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">string</text>
+  
+  <text x="65" y="380" font-family="monospace" font-size="11" fill="#5C5A55">states</text>
+  <text x="200" y="380" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">string[]</text>
+  
+  <text x="65" y="400" font-family="monospace" font-size="11" fill="#5C5A55">transitions</text>
+  <text x="200" y="400" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">object</text>
+  
+  <!-- Comment Entity -->
+  <rect x="550" y="70" width="200" height="180" rx="8" fill="white" stroke="#F57F17" stroke-width="2"/>
+  <rect x="550" y="70" width="200" height="35" rx="8" fill="#F57F17"/>
+  <rect x="550" y="93" width="200" height="12" fill="#F57F17"/>
+  <text x="650" y="95" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="white" text-anchor="middle">Comment</text>
+  
+  <text x="565" y="130" font-family="monospace" font-size="11" fill="#5C5A55">id</text>
+  <text x="700" y="130" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">string</text>
+  
+  <text x="565" y="150" font-family="monospace" font-size="11" fill="#1565C0">ticket_id</text>
+  <text x="700" y="150" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">→ Ticket</text>
+  
+  <text x="565" y="170" font-family="monospace" font-size="11" fill="#5C5A55">author</text>
+  <text x="700" y="170" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">string</text>
+  
+  <text x="565" y="190" font-family="monospace" font-size="11" fill="#5C5A55">content</text>
+  <text x="700" y="190" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">string</text>
+  
+  <text x="565" y="210" font-family="monospace" font-size="11" fill="#F57F17">parent_id</text>
+  <text x="700" y="210" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">→ Comment?</text>
+  
+  <text x="565" y="230" font-family="monospace" font-size="11" fill="#5C5A55">created_at</text>
+  <text x="700" y="230" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">datetime</text>
+  
+  <!-- Activity Entity -->
+  <rect x="550" y="280" width="200" height="160" rx="8" fill="white" stroke="#546E7A" stroke-width="2"/>
+  <rect x="550" y="280" width="200" height="35" rx="8" fill="#546E7A"/>
+  <rect x="550" y="303" width="200" height="12" fill="#546E7A"/>
+  <text x="650" y="305" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="white" text-anchor="middle">Activity</text>
+  
+  <text x="565" y="340" font-family="monospace" font-size="11" fill="#5C5A55">id</text>
+  <text x="700" y="340" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">string</text>
+  
+  <text x="565" y="360" font-family="monospace" font-size="11" fill="#1565C0">ticket_id</text>
+  <text x="700" y="360" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">→ Ticket</text>
+  
+  <text x="565" y="380" font-family="monospace" font-size="11" fill="#5C5A55">actor</text>
+  <text x="700" y="380" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">string</text>
+  
+  <text x="565" y="400" font-family="monospace" font-size="11" fill="#5C5A55">action</text>
+  <text x="700" y="400" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">enum</text>
+  
+  <text x="565" y="420" font-family="monospace" font-size="11" fill="#5C5A55">changes</text>
+  <text x="700" y="420" font-family="monospace" font-size="10" fill="#8C8A85" text-anchor="end">object</text>
+  
+  <!-- Relationship arrows -->
+  <!-- Board -> Ticket -->
+  <path d="M250 160 L300 160" stroke="#0E7C6B" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Board -> Workflow -->
+  <path d="M150 250 L150 280" stroke="#7B1FA2" stroke-width="2" stroke-dasharray="4 2"/>
+  
+  <!-- Ticket -> Comment -->
+  <path d="M500 160 L550 160" stroke="#F57F17" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Ticket -> Activity -->
+  <path d="M500 350 L550 350" stroke="#546E7A" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Self-reference for Ticket subtasks -->
+  <path d="M400 390 L400 410 L320 410 L320 290 L300 290" stroke="#7B1FA2" stroke-width="1.5" stroke-dasharray="4 2" fill="none"/>
+  
+  <!-- Arrowhead marker -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#5C5A55"/>
+    </marker>
+  </defs>
+</svg>

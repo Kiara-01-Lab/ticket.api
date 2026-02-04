@@ -1,0 +1,36 @@
+title: "[Help]: "
+labels: ["help wanted", "question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Need Help?
+
+        Ask for help with using TicketKit. Before posting:
+        - Check the [documentation](https://github.com/Kiara-02-Lab-OW/ticket.api#readme)
+        - Search existing discussions
+        - Review the examples in the repo
+
+  - type: textarea
+    attributes:
+      label: What are you trying to do?
+      description: Describe what you're trying to accomplish
+      placeholder: "I'm trying to create a custom workflow that..."
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: What have you tried?
+      description: Show us your code or describe your attempts
+      placeholder: |
+        ```javascript
+        const kit = await TicketKit.create();
+        // My code...
+        ```
+
+  - type: textarea
+    attributes:
+      label: What's not working?
+      description: What error or unexpected behavior are you seeing?
+      placeholder: "I expected X to happen, but Y happened instead..."

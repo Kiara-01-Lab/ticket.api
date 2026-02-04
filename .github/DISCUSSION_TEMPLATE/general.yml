@@ -1,0 +1,19 @@
+title: "[Discussion]: "
+labels: ["discussion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## General Discussion
+
+        Start a conversation about TicketKit! This is the place for:
+        - Architecture discussions
+        - Best practices
+        - Design decisions
+        - Community feedback
+
+  - type: textarea
+    attributes:
+      label: Topic
+      description: What would you like to discuss?
+      placeholder: Share your thoughts, questions, or observations about TicketKit

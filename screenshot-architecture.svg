@@ -1,0 +1,87 @@
+<svg width="800" height="400" viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="400" rx="12" fill="#FAFAF8"/>
+  
+  <!-- Title -->
+  <text x="400" y="35" font-family="system-ui, sans-serif" font-size="18" font-weight="600" fill="#1F1E1C" text-anchor="middle">Architecture</text>
+  
+  <!-- Your App Box -->
+  <rect x="50" y="70" width="200" height="260" rx="12" fill="white" stroke="#0E7C6B" stroke-width="2"/>
+  <rect x="50" y="70" width="200" height="40" rx="12" fill="#0E7C6B"/>
+  <rect x="50" y="98" width="200" height="12" fill="#0E7C6B"/>
+  <text x="150" y="97" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="white" text-anchor="middle">Your App</text>
+  
+  <!-- App components -->
+  <rect x="70" y="130" width="160" height="35" rx="6" fill="#E6F5F2"/>
+  <text x="150" y="153" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#0E7C6B" text-anchor="middle">React / Vue / HTML</text>
+  
+  <rect x="70" y="175" width="160" height="35" rx="6" fill="#E6F5F2"/>
+  <text x="150" y="198" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#0E7C6B" text-anchor="middle">Express / Fastify</text>
+  
+  <rect x="70" y="220" width="160" height="35" rx="6" fill="#E6F5F2"/>
+  <text x="150" y="243" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#0E7C6B" text-anchor="middle">WebSocket Server</text>
+  
+  <rect x="70" y="270" width="160" height="40" rx="6" fill="#F5F5F3" stroke="#E0E0DD" stroke-width="1" stroke-dasharray="4 2"/>
+  <text x="150" y="295" font-family="system-ui, sans-serif" font-size="11" fill="#8C8A85" text-anchor="middle">Your custom code</text>
+  
+  <!-- Arrow from App to TicketKit -->
+  <path d="M260 200 L310 200" stroke="#D4D2CD" stroke-width="2"/>
+  <polygon points="310,196 320,200 310,204" fill="#D4D2CD"/>
+  
+  <!-- TicketKit Box -->
+  <rect x="330" y="70" width="200" height="260" rx="12" fill="white" stroke="#1565C0" stroke-width="2"/>
+  <rect x="330" y="70" width="200" height="40" rx="12" fill="#1565C0"/>
+  <rect x="330" y="98" width="200" height="12" fill="#1565C0"/>
+  <text x="430" y="97" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="white" text-anchor="middle">TicketKit SDK</text>
+  
+  <!-- SDK components -->
+  <rect x="350" y="125" width="160" height="30" rx="4" fill="#E3F2FD"/>
+  <text x="430" y="145" font-family="system-ui, sans-serif" font-size="11" font-weight="500" fill="#1565C0" text-anchor="middle">Boards & Tickets API</text>
+  
+  <rect x="350" y="162" width="160" height="30" rx="4" fill="#E3F2FD"/>
+  <text x="430" y="182" font-family="system-ui, sans-serif" font-size="11" font-weight="500" fill="#1565C0" text-anchor="middle">Workflow Engine</text>
+  
+  <rect x="350" y="199" width="160" height="30" rx="4" fill="#E3F2FD"/>
+  <text x="430" y="219" font-family="system-ui, sans-serif" font-size="11" font-weight="500" fill="#1565C0" text-anchor="middle">Comments & Activity</text>
+  
+  <rect x="350" y="236" width="160" height="30" rx="4" fill="#E3F2FD"/>
+  <text x="430" y="256" font-family="system-ui, sans-serif" font-size="11" font-weight="500" fill="#1565C0" text-anchor="middle">Search & Filters</text>
+  
+  <rect x="350" y="273" width="160" height="30" rx="4" fill="#E3F2FD"/>
+  <text x="430" y="293" font-family="system-ui, sans-serif" font-size="11" font-weight="500" fill="#1565C0" text-anchor="middle">Event System</text>
+  
+  <!-- Arrow from TicketKit to Storage -->
+  <path d="M540 200 L590 200" stroke="#D4D2CD" stroke-width="2"/>
+  <polygon points="590,196 600,200 590,204" fill="#D4D2CD"/>
+  
+  <!-- Storage Options -->
+  <rect x="610" y="70" width="160" height="260" rx="12" fill="white" stroke="#7B1FA2" stroke-width="2"/>
+  <rect x="610" y="70" width="160" height="40" rx="12" fill="#7B1FA2"/>
+  <rect x="610" y="98" width="160" height="12" fill="#7B1FA2"/>
+  <text x="690" y="97" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="white" text-anchor="middle">Storage</text>
+  
+  <!-- SQLite (included) -->
+  <rect x="630" y="125" width="120" height="50" rx="6" fill="#F3E5F5" stroke="#7B1FA2" stroke-width="1"/>
+  <text x="690" y="148" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#7B1FA2" text-anchor="middle">SQLite</text>
+  <text x="690" y="165" font-family="system-ui, sans-serif" font-size="10" fill="#8C8A85" text-anchor="middle">✓ Included</text>
+  
+  <!-- Postgres -->
+  <rect x="630" y="185" width="120" height="40" rx="6" fill="#F5F5F3" stroke="#E0E0DD" stroke-width="1" stroke-dasharray="4 2"/>
+  <text x="690" y="205" font-family="system-ui, sans-serif" font-size="12" fill="#5C5A55" text-anchor="middle">PostgreSQL</text>
+  <text x="690" y="218" font-family="system-ui, sans-serif" font-size="9" fill="#8C8A85" text-anchor="middle">Add your adapter</text>
+  
+  <!-- MySQL -->
+  <rect x="630" y="235" width="120" height="40" rx="6" fill="#F5F5F3" stroke="#E0E0DD" stroke-width="1" stroke-dasharray="4 2"/>
+  <text x="690" y="255" font-family="system-ui, sans-serif" font-size="12" fill="#5C5A55" text-anchor="middle">MySQL</text>
+  <text x="690" y="268" font-family="system-ui, sans-serif" font-size="9" fill="#8C8A85" text-anchor="middle">Add your adapter</text>
+  
+  <!-- MongoDB -->
+  <rect x="630" y="285" width="120" height="40" rx="6" fill="#F5F5F3" stroke="#E0E0DD" stroke-width="1" stroke-dasharray="4 2"/>
+  <text x="690" y="305" font-family="system-ui, sans-serif" font-size="12" fill="#5C5A55" text-anchor="middle">MongoDB</text>
+  <text x="690" y="318" font-family="system-ui, sans-serif" font-size="9" fill="#8C8A85" text-anchor="middle">Add your adapter</text>
+  
+  <!-- Footer labels -->
+  <text x="150" y="365" font-family="system-ui, sans-serif" font-size="11" fill="#8C8A85" text-anchor="middle">You build the UI</text>
+  <text x="430" y="365" font-family="system-ui, sans-serif" font-size="11" fill="#8C8A85" text-anchor="middle">We handle the logic</text>
+  <text x="690" y="365" font-family="system-ui, sans-serif" font-size="11" fill="#8C8A85" text-anchor="middle">You choose storage</text>
+</svg>

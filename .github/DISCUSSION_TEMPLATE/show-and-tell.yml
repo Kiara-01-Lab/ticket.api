@@ -1,0 +1,43 @@
+title: "[Show & Tell]: "
+labels: ["showcase"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Show & Tell
+
+        Built something with TicketKit? Share it with the community!
+        - Project boards you've created
+        - Custom workflows
+        - Integrations with other tools
+        - Production use cases
+        - Tutorials or blog posts
+
+  - type: textarea
+    attributes:
+      label: What did you build?
+      description: Tell us about your project
+      placeholder: "I built a Kanban board for..."
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Screenshots / Demo
+      description: Share screenshots, links, or demos
+      placeholder: |
+        ![Screenshot](url)
+
+        Demo: https://example.com
+
+  - type: textarea
+    attributes:
+      label: Technical Details
+      description: Share interesting implementation details or challenges
+      placeholder: "I used TicketKit with Express.js and Socket.io to..."
+
+  - type: input
+    attributes:
+      label: Links
+      description: GitHub repo, live demo, blog post, etc.
+      placeholder: "https://github.com/yourname/project"

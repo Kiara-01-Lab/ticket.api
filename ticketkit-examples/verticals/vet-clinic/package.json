@@ -1,0 +1,17 @@
+{
+  "name": "ticketkit-vet-clinic",
+  "version": "1.0.0",
+  "description": "Veterinary clinic patient flow system built with ticket.api",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "demo": "node demo.js"
+  },
+  "keywords": ["ticketkit", "kanban", "veterinary", "clinic", "healthcare"],
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "ticketkit": "^0.1.0"
+  }
+}

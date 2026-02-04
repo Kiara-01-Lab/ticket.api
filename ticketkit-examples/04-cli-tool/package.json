@@ -1,0 +1,17 @@
+{
+  "name": "ticketkit-cli",
+  "version": "1.0.0",
+  "description": "Command-line task manager built with ticket.api",
+  "main": "index.js",
+  "bin": {
+    "ticket": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": ["ticketkit", "kanban", "cli", "task", "todo"],
+  "license": "MIT",
+  "dependencies": {
+    "ticketkit": "^0.1.0"
+  }
+}

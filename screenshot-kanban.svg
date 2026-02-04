@@ -1,0 +1,87 @@
+<svg width="800" height="400" viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="400" rx="12" fill="#F5F5F3"/>
+  
+  <!-- Window chrome -->
+  <rect width="800" height="40" rx="12" fill="#E8E8E5"/>
+  <rect y="28" width="800" height="12" fill="#E8E8E5"/>
+  <circle cx="20" cy="20" r="6" fill="#FF6B6B"/>
+  <circle cx="40" cy="20" r="6" fill="#FFD93D"/>
+  <circle cx="60" cy="20" r="6" fill="#6BCB77"/>
+  
+  <!-- Title bar -->
+  <text x="400" y="25" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#5C5A55" text-anchor="middle">My Project — Kanban Board</text>
+  
+  <!-- Column: Backlog -->
+  <rect x="20" y="60" width="180" height="320" rx="8" fill="#EAEAE7"/>
+  <text x="30" y="85" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#8C8A85" letter-spacing="0.5">BACKLOG</text>
+  <rect x="155" y="72" width="24" height="18" rx="9" fill="#D4D2CD"/>
+  <text x="167" y="85" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#5C5A55" text-anchor="middle">3</text>
+  
+  <!-- Card 1 -->
+  <rect x="30" y="100" width="160" height="70" rx="6" fill="white" stroke="#E0E0DD" stroke-width="1"/>
+  <text x="40" y="122" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#1F1E1C">Setup database</text>
+  <text x="40" y="140" font-family="system-ui, sans-serif" font-size="11" fill="#8C8A85">PostgreSQL config</text>
+  <rect x="40" y="150" width="50" height="14" rx="3" fill="#E3F2FD"/>
+  <text x="48" y="161" font-family="system-ui, sans-serif" font-size="9" font-weight="600" fill="#1565C0">backend</text>
+  
+  <!-- Card 2 -->
+  <rect x="30" y="180" width="160" height="55" rx="6" fill="white" stroke="#E0E0DD" stroke-width="1"/>
+  <text x="40" y="202" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#1F1E1C">Write API docs</text>
+  <rect x="40" y="215" width="35" height="14" rx="3" fill="#F3E5F5"/>
+  <text x="48" y="226" font-family="system-ui, sans-serif" font-size="9" font-weight="600" fill="#7B1FA2">docs</text>
+  
+  <!-- Column: To Do -->
+  <rect x="210" y="60" width="180" height="320" rx="8" fill="#EAEAE7"/>
+  <text x="220" y="85" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#8C8A85" letter-spacing="0.5">TO DO</text>
+  <rect x="345" y="72" width="24" height="18" rx="9" fill="#D4D2CD"/>
+  <text x="357" y="85" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#5C5A55" text-anchor="middle">2</text>
+  
+  <!-- Card 3 -->
+  <rect x="220" y="100" width="160" height="80" rx="6" fill="white" stroke="#E0E0DD" stroke-width="1"/>
+  <text x="230" y="122" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#1F1E1C">Design landing page</text>
+  <text x="230" y="140" font-family="system-ui, sans-serif" font-size="11" fill="#8C8A85">Hero section mockup</text>
+  <rect x="230" y="152" width="45" height="14" rx="3" fill="#FFF3E0"/>
+  <text x="238" y="163" font-family="system-ui, sans-serif" font-size="9" font-weight="600" fill="#E65100">design</text>
+  <circle cx="360" cy="162" r="10" fill="#E8E8E5"/>
+  <text x="360" y="166" font-family="system-ui, sans-serif" font-size="9" font-weight="600" fill="#5C5A55" text-anchor="middle">AK</text>
+  
+  <!-- Card 4 -->
+  <rect x="220" y="190" width="160" height="65" rx="6" fill="white" stroke="#FFCDD2" stroke-width="2"/>
+  <text x="230" y="212" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#1F1E1C">Fix login bug</text>
+  <rect x="230" y="225" width="30" height="14" rx="3" fill="#FFEBEE"/>
+  <text x="238" y="236" font-family="system-ui, sans-serif" font-size="9" font-weight="600" fill="#C62828">bug</text>
+  <rect x="265" y="225" width="45" height="14" rx="3" fill="#FCE4EC"/>
+  <text x="273" y="236" font-family="system-ui, sans-serif" font-size="9" font-weight="600" fill="#AD1457">urgent</text>
+  
+  <!-- Column: In Progress -->
+  <rect x="400" y="60" width="180" height="320" rx="8" fill="#E6F5F2"/>
+  <text x="410" y="85" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#0E7C6B" letter-spacing="0.5">IN PROGRESS</text>
+  <rect x="535" y="72" width="24" height="18" rx="9" fill="#B2DFDB"/>
+  <text x="547" y="85" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#0E7C6B" text-anchor="middle">1</text>
+  
+  <!-- Card 5 (active) -->
+  <rect x="410" y="100" width="160" height="85" rx="6" fill="white" stroke="#0E7C6B" stroke-width="2"/>
+  <text x="420" y="122" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#1F1E1C">Build auth system</text>
+  <text x="420" y="140" font-family="system-ui, sans-serif" font-size="11" fill="#8C8A85">OAuth + JWT tokens</text>
+  <rect x="420" y="152" width="50" height="14" rx="3" fill="#E3F2FD"/>
+  <text x="428" y="163" font-family="system-ui, sans-serif" font-size="9" font-weight="600" fill="#1565C0">feature</text>
+  <circle cx="550" cy="170" r="10" fill="#0E7C6B"/>
+  <text x="550" y="174" font-family="system-ui, sans-serif" font-size="9" font-weight="600" fill="white" text-anchor="middle">JD</text>
+  
+  <!-- Column: Review -->
+  <rect x="590" y="60" width="90" height="320" rx="8" fill="#EAEAE7"/>
+  <text x="600" y="85" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#8C8A85" letter-spacing="0.5">REVIEW</text>
+  
+  <!-- Column: Done -->
+  <rect x="690" y="60" width="90" height="320" rx="8" fill="#EAEAE7"/>
+  <text x="700" y="85" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#8C8A85" letter-spacing="0.5">DONE</text>
+  <rect x="755" y="72" width="18" height="18" rx="9" fill="#C8E6C9"/>
+  <text x="764" y="85" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#2E7D32" text-anchor="middle">4</text>
+  
+  <!-- Done cards (compact) -->
+  <rect x="700" y="100" width="70" height="35" rx="4" fill="white" stroke="#E0E0DD" stroke-width="1" opacity="0.8"/>
+  <rect x="700" y="140" width="70" height="35" rx="4" fill="white" stroke="#E0E0DD" stroke-width="1" opacity="0.8"/>
+  <rect x="700" y="180" width="70" height="35" rx="4" fill="white" stroke="#E0E0DD" stroke-width="1" opacity="0.8"/>
+  <rect x="700" y="220" width="70" height="35" rx="4" fill="white" stroke="#E0E0DD" stroke-width="1" opacity="0.8"/>
+</svg>

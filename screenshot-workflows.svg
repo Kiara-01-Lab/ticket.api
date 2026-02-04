@@ -1,0 +1,127 @@
+<svg width="800" height="360" viewBox="0 0 800 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="360" rx="12" fill="#FAFAF8"/>
+  
+  <!-- Title -->
+  <text x="400" y="35" font-family="system-ui, sans-serif" font-size="18" font-weight="600" fill="#1F1E1C" text-anchor="middle">Built-in Workflows</text>
+  
+  <!-- Kanban Workflow -->
+  <rect x="30" y="60" width="740" height="65" rx="8" fill="white" stroke="#E0E0DD" stroke-width="1"/>
+  <text x="50" y="85" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#1F1E1C">Kanban</text>
+  <text x="50" y="105" font-family="system-ui, sans-serif" font-size="11" fill="#8C8A85">Default workflow for project management</text>
+  
+  <!-- Kanban states -->
+  <rect x="180" y="75" width="65" height="28" rx="4" fill="#F5F5F3"/>
+  <text x="212" y="94" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#5C5A55" text-anchor="middle">backlog</text>
+  
+  <path d="M250 89 L260 89" stroke="#D4D2CD" stroke-width="2"/>
+  <polygon points="260,86 266,89 260,92" fill="#D4D2CD"/>
+  
+  <rect x="270" y="75" width="50" height="28" rx="4" fill="#FFF8E1"/>
+  <text x="295" y="94" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#F57F17" text-anchor="middle">todo</text>
+  
+  <path d="M325 89 L335 89" stroke="#D4D2CD" stroke-width="2"/>
+  <polygon points="335,86 341,89 335,92" fill="#D4D2CD"/>
+  
+  <rect x="345" y="75" width="80" height="28" rx="4" fill="#E3F2FD"/>
+  <text x="385" y="94" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#1565C0" text-anchor="middle">in_progress</text>
+  
+  <path d="M430 89 L440 89" stroke="#D4D2CD" stroke-width="2"/>
+  <polygon points="440,86 446,89 440,92" fill="#D4D2CD"/>
+  
+  <rect x="450" y="75" width="55" height="28" rx="4" fill="#F3E5F5"/>
+  <text x="477" y="94" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#7B1FA2" text-anchor="middle">review</text>
+  
+  <path d="M510 89 L520 89" stroke="#D4D2CD" stroke-width="2"/>
+  <polygon points="520,86 526,89 520,92" fill="#D4D2CD"/>
+  
+  <rect x="530" y="75" width="50" height="28" rx="4" fill="#E8F5E9"/>
+  <text x="555" y="94" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#2E7D32" text-anchor="middle">done</text>
+  
+  <!-- Scrum Workflow -->
+  <rect x="30" y="135" width="740" height="65" rx="8" fill="white" stroke="#E0E0DD" stroke-width="1"/>
+  <text x="50" y="160" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#1F1E1C">Scrum</text>
+  <text x="50" y="180" font-family="system-ui, sans-serif" font-size="11" fill="#8C8A85">Sprint-based development workflow</text>
+  
+  <!-- Scrum states -->
+  <rect x="180" y="150" width="65" height="28" rx="4" fill="#F5F5F3"/>
+  <text x="212" y="169" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#5C5A55" text-anchor="middle">backlog</text>
+  
+  <path d="M250 164 L260 164" stroke="#D4D2CD" stroke-width="2"/>
+  <polygon points="260,161 266,164 260,167" fill="#D4D2CD"/>
+  
+  <rect x="270" y="150" width="85" height="28" rx="4" fill="#FFF8E1"/>
+  <text x="312" y="169" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#F57F17" text-anchor="middle">sprint_backlog</text>
+  
+  <path d="M360 164 L370 164" stroke="#D4D2CD" stroke-width="2"/>
+  <polygon points="370,161 376,164 370,167" fill="#D4D2CD"/>
+  
+  <rect x="380" y="150" width="80" height="28" rx="4" fill="#E3F2FD"/>
+  <text x="420" y="169" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#1565C0" text-anchor="middle">in_progress</text>
+  
+  <path d="M465 164 L475 164" stroke="#D4D2CD" stroke-width="2"/>
+  <polygon points="475,161 481,164 475,167" fill="#D4D2CD"/>
+  
+  <rect x="485" y="150" width="55" height="28" rx="4" fill="#FCE4EC"/>
+  <text x="512" y="169" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#C2185B" text-anchor="middle">testing</text>
+  
+  <path d="M545 164 L555 164" stroke="#D4D2CD" stroke-width="2"/>
+  <polygon points="555,161 561,164 555,167" fill="#D4D2CD"/>
+  
+  <rect x="565" y="150" width="50" height="28" rx="4" fill="#E8F5E9"/>
+  <text x="590" y="169" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#2E7D32" text-anchor="middle">done</text>
+  
+  <!-- Support Workflow -->
+  <rect x="30" y="210" width="740" height="65" rx="8" fill="white" stroke="#E0E0DD" stroke-width="1"/>
+  <text x="50" y="235" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#1F1E1C">Support</text>
+  <text x="50" y="255" font-family="system-ui, sans-serif" font-size="11" fill="#8C8A85">Zendesk-style ticket management</text>
+  
+  <!-- Support states -->
+  <rect x="180" y="225" width="45" height="28" rx="4" fill="#FFEBEE"/>
+  <text x="202" y="244" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#C62828" text-anchor="middle">new</text>
+  
+  <path d="M230 239 L240 239" stroke="#D4D2CD" stroke-width="2"/>
+  <polygon points="240,236 246,239 240,242" fill="#D4D2CD"/>
+  
+  <rect x="250" y="225" width="50" height="28" rx="4" fill="#E3F2FD"/>
+  <text x="275" y="244" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#1565C0" text-anchor="middle">open</text>
+  
+  <path d="M305 239 L315 239" stroke="#D4D2CD" stroke-width="2"/>
+  <polygon points="315,236 321,239 315,242" fill="#D4D2CD"/>
+  
+  <rect x="325" y="225" width="60" height="28" rx="4" fill="#FFF8E1"/>
+  <text x="355" y="244" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#F57F17" text-anchor="middle">pending</text>
+  
+  <path d="M390 239 L400 239" stroke="#D4D2CD" stroke-width="2"/>
+  <polygon points="400,236 406,239 400,242" fill="#D4D2CD"/>
+  
+  <rect x="410" y="225" width="55" height="28" rx="4" fill="#E8F5E9"/>
+  <text x="437" y="244" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#2E7D32" text-anchor="middle">solved</text>
+  
+  <path d="M470 239 L480 239" stroke="#D4D2CD" stroke-width="2"/>
+  <polygon points="480,236 486,239 480,242" fill="#D4D2CD"/>
+  
+  <rect x="490" y="225" width="55" height="28" rx="4" fill="#ECEFF1"/>
+  <text x="517" y="244" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#546E7A" text-anchor="middle">closed</text>
+  
+  <!-- Simple Workflow -->
+  <rect x="30" y="285" width="740" height="65" rx="8" fill="white" stroke="#E0E0DD" stroke-width="1"/>
+  <text x="50" y="310" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#1F1E1C">Simple</text>
+  <text x="50" y="330" font-family="system-ui, sans-serif" font-size="11" fill="#8C8A85">Trello-style, minimal columns</text>
+  
+  <!-- Simple states -->
+  <rect x="180" y="300" width="50" height="28" rx="4" fill="#FFF8E1"/>
+  <text x="205" y="319" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#F57F17" text-anchor="middle">todo</text>
+  
+  <path d="M235 314 L260 314" stroke="#D4D2CD" stroke-width="2"/>
+  <polygon points="260,311 266,314 260,317" fill="#D4D2CD"/>
+  
+  <rect x="275" y="300" width="55" height="28" rx="4" fill="#E3F2FD"/>
+  <text x="302" y="319" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#1565C0" text-anchor="middle">doing</text>
+  
+  <path d="M335 314 L360 314" stroke="#D4D2CD" stroke-width="2"/>
+  <polygon points="360,311 366,314 360,317" fill="#D4D2CD"/>
+  
+  <rect x="375" y="300" width="50" height="28" rx="4" fill="#E8F5E9"/>
+  <text x="400" y="319" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#2E7D32" text-anchor="middle">done</text>
+</svg>

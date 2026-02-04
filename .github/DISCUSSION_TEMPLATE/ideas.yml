@@ -1,0 +1,38 @@
+title: "[Idea]: "
+labels: ["idea", "enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Share Your Idea
+
+        Have an idea for TicketKit? This is more casual than a feature request.
+        Use this for:
+        - Brainstorming new features
+        - Exploring API design ideas
+        - Suggesting integrations
+        - Proposing major changes
+
+  - type: textarea
+    attributes:
+      label: Your Idea
+      description: Describe your idea
+      placeholder: "What if TicketKit could..."
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Why?
+      description: What problem would this solve or what value would it add?
+      placeholder: "This would help developers..."
+
+  - type: textarea
+    attributes:
+      label: Example
+      description: Show what the API might look like or provide a use case
+      placeholder: |
+        ```javascript
+        // Example usage
+        const result = await kit.newFeature();
+        ```

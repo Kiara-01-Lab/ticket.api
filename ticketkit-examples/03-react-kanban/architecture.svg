@@ -1,0 +1,79 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Title -->
+  <text x="400" y="30" font-size="24" font-weight="bold" text-anchor="middle" fill="#111827">
+    React Kanban Board Architecture
+  </text>
+
+  <!-- React Frontend -->
+  <rect x="50" y="60" width="700" height="180" fill="#EFF6FF" stroke="#3B82F6" stroke-width="2" rx="8"/>
+  <text x="400" y="85" font-size="16" font-weight="bold" text-anchor="middle" fill="#1E40AF">
+    React Frontend (Port 5173)
+  </text>
+
+  <!-- UI Components -->
+  <rect x="80" y="100" width="200" height="120" fill="#DBEAFE" stroke="#3B82F6" stroke-width="1.5" rx="6"/>
+  <text x="180" y="125" font-size="14" font-weight="bold" text-anchor="middle" fill="#1E3A8A">UI Components</text>
+  <text x="180" y="150" font-size="12" text-anchor="middle" fill="#1E3A8A">• Kanban Board View</text>
+  <text x="180" y="170" font-size="12" text-anchor="middle" fill="#1E3A8A">• Column Display</text>
+  <text x="180" y="190" font-size="12" text-anchor="middle" fill="#1E3A8A">• Card Components</text>
+  <text x="180" y="210" font-size="12" text-anchor="middle" fill="#1E3A8A">• Drag & Drop Interface</text>
+
+  <!-- State Management -->
+  <rect x="310" y="100" width="200" height="120" fill="#DBEAFE" stroke="#3B82F6" stroke-width="1.5" rx="6"/>
+  <text x="410" y="125" font-size="14" font-weight="bold" text-anchor="middle" fill="#1E3A8A">State Management</text>
+  <text x="410" y="150" font-size="12" text-anchor="middle" fill="#1E3A8A">• React Hooks</text>
+  <text x="410" y="170" font-size="12" text-anchor="middle" fill="#1E3A8A">• Task State</text>
+  <text x="410" y="190" font-size="12" text-anchor="middle" fill="#1E3A8A">• Column State</text>
+  <text x="410" y="210" font-size="12" text-anchor="middle" fill="#1E3A8A">• Real-time Updates</text>
+
+  <!-- Features -->
+  <rect x="540" y="100" width="180" height="120" fill="#DBEAFE" stroke="#3B82F6" stroke-width="1.5" rx="6"/>
+  <text x="630" y="125" font-size="14" font-weight="bold" text-anchor="middle" fill="#1E3A8A">Features</text>
+  <text x="630" y="150" font-size="12" text-anchor="middle" fill="#1E3A8A">• Create Tasks</text>
+  <text x="630" y="170" font-size="12" text-anchor="middle" fill="#1E3A8A">• Update Status</text>
+  <text x="630" y="190" font-size="12" text-anchor="middle" fill="#1E3A8A">• Delete Tasks</text>
+  <text x="630" y="210" font-size="12" text-anchor="middle" fill="#1E3A8A">• Visual Workflow</text>
+
+  <!-- Arrow to Backend -->
+  <line x1="400" y1="240" x2="400" y2="280" stroke="#6B7280" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="420" y="265" font-size="12" fill="#6B7280">REST API</text>
+
+  <!-- Express Backend -->
+  <rect x="50" y="280" width="700" height="140" fill="#F0FDF4" stroke="#10B981" stroke-width="2" rx="8"/>
+  <text x="400" y="305" font-size="16" font-weight="bold" text-anchor="middle" fill="#065F46">
+    Express Backend (Port 3001)
+  </text>
+
+  <!-- API Endpoints -->
+  <rect x="80" y="320" width="300" height="80" fill="#D1FAE5" stroke="#10B981" stroke-width="1.5" rx="6"/>
+  <text x="230" y="340" font-size="14" font-weight="bold" text-anchor="middle" fill="#065F46">REST API Endpoints</text>
+  <text x="230" y="360" font-size="12" text-anchor="middle" fill="#065F46">GET /api/boards - List boards</text>
+  <text x="230" y="378" font-size="12" text-anchor="middle" fill="#065F46">POST /api/boards - Create board</text>
+  <text x="230" y="396" font-size="12" text-anchor="middle" fill="#065F46">PATCH /api/tickets/:id - Update task</text>
+
+  <!-- TicketKit Integration -->
+  <rect x="410" y="320" width="310" height="80" fill="#D1FAE5" stroke="#10B981" stroke-width="1.5" rx="6"/>
+  <text x="565" y="340" font-size="14" font-weight="bold" text-anchor="middle" fill="#065F46">TicketKit SDK</text>
+  <text x="565" y="360" font-size="12" text-anchor="middle" fill="#065F46">• Board Management</text>
+  <text x="565" y="378" font-size="12" text-anchor="middle" fill="#065F46">• Ticket CRUD Operations</text>
+  <text x="565" y="396" font-size="12" text-anchor="middle" fill="#065F46">• Default Workflow (todo/in-progress/done)</text>
+
+  <!-- Arrow to Database -->
+  <line x1="400" y1="420" x2="400" y2="460" stroke="#6B7280" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- Database -->
+  <rect x="250" y="460" width="300" height="100" fill="#FEF3C7" stroke="#F59E0B" stroke-width="2" rx="8"/>
+  <text x="400" y="485" font-size="16" font-weight="bold" text-anchor="middle" fill="#92400E">
+    SQLite Database (In-Memory)
+  </text>
+  <text x="400" y="510" font-size="12" text-anchor="middle" fill="#92400E">• Boards Table</text>
+  <text x="400" y="530" font-size="12" text-anchor="middle" fill="#92400E">• Tickets Table</text>
+  <text x="400" y="550" font-size="12" text-anchor="middle" fill="#92400E">• Activity Logs</text>
+
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#6B7280"/>
+    </marker>
+  </defs>
+</svg>

@@ -1,0 +1,25 @@
+{
+  "name": "wedding-planner-api",
+  "version": "1.0.0",
+  "description": "Wedding planner vertical SaaS built with TicketKit",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "wedding",
+    "event-planning",
+    "ticketkit",
+    "vertical-saas"
+  ],
+  "author": "Kiara Lab",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.2.1",
+    "cors": "^2.8.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
