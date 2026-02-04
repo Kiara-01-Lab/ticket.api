@@ -49,4 +49,4 @@ When using TicketKit:
 
 For security-related questions: owais.munawar@gmail.com or dai@kiara.team
 
-For general questions: https://github.com/Kiara-02-Lab-OW/ticket.api/issues
+For general questions: https://github.com/Kiara-01-Lab/ticket.api-public/issues

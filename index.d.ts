@@ -1,5 +1,5 @@
 // Type definitions for TicketKit
-// Project: https://github.com/Kiara-02-Lab-OW/ticket.api
+// Project: https://github.com/Kiara-01-Lab/ticket.api-public
 // Definitions by: TicketKit Contributors
 
 export interface TicketKitConfig {

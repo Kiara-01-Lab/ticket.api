@@ -272,6 +272,5 @@ No libraries required - uses HTML5 drag events:
 
 ## Related Examples
 
-- **[01-basic](../01-basic)** — Simple task list basics
-- **[02-express-api](../02-express-api)** — REST API fundamentals
-- **[ticketkit-examples/](../)** — More examples and use cases
+- **[wedding-planner](../wedding-planner)** — Vertical SaaS example for wedding planning
+- **[ticketkit-examples/](../)** — See all available examples

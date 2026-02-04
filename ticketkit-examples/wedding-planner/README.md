@@ -524,9 +524,8 @@ The UI shows:
 
 ## Related Examples
 
-- **[03-react-kanban](../../03-react-kanban)** - Generic kanban board (good for UI patterns)
-- **[verticals/vet-clinic](../vet-clinic)** - Patient flow tracking (simpler vertical example)
-- **[02-rest-api](../../02-rest-api)** - REST API basics
+- **[react-kanban](../react-kanban)** - Generic kanban board with full feature set
+- **[ticketkit-examples/](../)** - See all available examples
 
 ---
 
@@ -547,4 +546,4 @@ To deploy this:
 
 MIT - Use this example however you like.
 
-Built with [TicketKit](https://github.com/Kiara-02-Lab-OW/ticket.api)
+Built with [TicketKit](https://github.com/Kiara-01-Lab/ticket.api-public)

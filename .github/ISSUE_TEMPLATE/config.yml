@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: GitHub Discussions
-    url: https://github.com/Kiara-02-Lab-OW/ticket.api/discussions
+    url: https://github.com/Kiara-01-Lab/ticket.api-public/discussions
     about: Ask questions, share ideas, or discuss TicketKit
   - name: Documentation
-    url: https://github.com/Kiara-02-Lab-OW/ticket.api#readme
+    url: https://github.com/Kiara-01-Lab/ticket.api-public#readme
     about: Read the official documentation

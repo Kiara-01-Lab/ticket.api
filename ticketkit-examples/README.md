@@ -1,166 +1,228 @@
-# ticket.api Examples
+# TicketKit Examples
 
-> Ready-to-use examples showing how to build with ticket.api.
+> Production-ready examples showing how to build with TicketKit.
 
 ## 📂 Examples
 
-| Example | Description | Complexity |
-|---------|-------------|------------|
-| [01-quickstart](./01-quickstart) | Minimal "hello world" demo | ⭐ |
-| [02-rest-api](./02-rest-api) | Complete Express REST API | ⭐⭐ |
-| [03-react-kanban](./03-react-kanban) | React frontend with drag-and-drop | ⭐⭐⭐ |
-| [04-cli-tool](./04-cli-tool) | Command-line task manager | ⭐⭐ |
-
-### 🏢 Vertical Industry Examples
-
-| Example | Industry | Description |
-|---------|----------|-------------|
-| [vet-clinic](./verticals/vet-clinic) | Healthcare | Patient flow tracking for veterinary clinics |
+| Example | Description | Stack |
+|---------|-------------|-------|
+| [react-kanban](./react-kanban) | Full-stack Kanban board with drag-and-drop UI | React + Express + TicketKit |
+| [wedding-planner](./wedding-planner) | Vertical SaaS for wedding planners | React + Express + Custom Workflows |
 
 ## 🚀 Quick Start
 
 ```bash
-# Clone the examples
-git clone https://github.com/Kiara-02-Lab-OW/ticket.api.git
-cd ticket.api/examples
+# Clone the repository
+git clone https://github.com/Kiara-01-Lab/ticket.api-public.git
+cd ticket.api-public/ticketkit-examples
 
-# Run the quickstart
-cd 01-quickstart
-npm install
-npm start
+# Run React Kanban
+cd react-kanban
+npm run install:all
+npm run dev
+# → Frontend: http://localhost:5173
+# → Backend: http://localhost:3001
+
+# Or run Wedding Planner
+cd wedding-planner
+npm run install:all
+npm run dev
+# → Frontend: http://localhost:5174
+# → Backend: http://localhost:3002
 ```
 
-## 📋 Example Progression
+## 📋 Examples Overview
 
-**Recommended learning path:**
+### 1. React Kanban Board
 
-1. **[01-quickstart](./01-quickstart)** — Understand the basics
-   - Initialize ticket.api
-   - Create boards and tickets
-   - Move tickets through workflows
-   - Get Kanban view
+A complete task management application with:
 
-2. **[02-rest-api](./02-rest-api)** — Build a backend
-   - Express server setup
-   - CRUD operations
-   - Search and filtering
-   - Comments and activity
+**Features:**
+- ✅ Kanban board view (todo → in-progress → done)
+- ✅ Drag-and-drop interface
+- ✅ Create, update, and delete tickets
+- ✅ Priority levels (low, medium, high, urgent)
+- ✅ Real-time updates
+- ✅ Responsive design
 
-3. **[03-react-kanban](./03-react-kanban)** — Add a frontend
-   - React components
-   - Drag-and-drop
-   - Real-time updates
-   - Responsive design
+**Tech Stack:**
+- **Frontend:** React + Vite
+- **Backend:** Express REST API
+- **Database:** SQLite (in-memory)
+- **SDK:** TicketKit with default Kanban workflow
 
-4. **[04-cli-tool](./04-cli-tool)** — Alternative interface
-   - CLI argument parsing
-   - Terminal colors
-   - Persistent storage
-   - Global installation
+**Use Cases:** Simple task tracking, personal projects, small team workflows
 
-5. **[verticals/](./verticals)** — Real-world applications
-   - Custom workflows
-   - Industry-specific fields
-   - Domain modeling
+[View Architecture Diagram](./react-kanban/architecture.svg)
 
-## 🔌 What Each Example Covers
+---
 
-### Core Features
+### 2. Wedding Planner (Vertical SaaS)
 
-| Feature | 01 | 02 | 03 | 04 | Vet |
-|---------|:--:|:--:|:--:|:--:|:---:|
-| Create boards | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Create tickets | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Move tickets | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Kanban view | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Search | | ✅ | | | |
-| Comments | | ✅ | | | |
-| Subtasks | | ✅ | | | |
-| Activity log | | ✅ | | | |
-| Custom workflow | | | | | ✅ |
-| Custom fields | | | | | ✅ |
+A specialized vertical SaaS for wedding planning professionals:
 
-### Technical Stack
+**Features:**
+- 📋 **Multi-Event Dashboard** — Manage multiple weddings simultaneously
+- 🎯 **Vendor Pipeline** — Track vendors through 10-state workflow
+- ✅ **Client Decision Queue** — Manage approvals with 6-state workflow
+- ⚠️ **Ghosting Alerts** — Detect vendors who haven't responded
+- 📇 **Contact Management** — Centralized contact sheet for day-of logistics
+- 📊 **Activity Audit Trail** — Immutable record of all decisions
 
-| Technology | 01 | 02 | 03 | 04 | Vet |
-|------------|:--:|:--:|:--:|:--:|:---:|
-| Node.js | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Express | | ✅ | ✅ | | ✅ |
-| React | | | ✅ | | |
-| Vite | | | ✅ | | |
-| CLI | | | | ✅ | |
+**Custom Workflows:**
+
+```javascript
+// Vendor Workflow (10 states)
+researching → outreach_sent → responded → quote_requested →
+quote_received → shortlisted → decision_pending → booked →
+contract_sent → contract_signed
+
+// Client Decision Workflow (6 states)
+drafting → presented → client_reviewing → approved →
+contracted → completed
+```
+
+**Tech Stack:**
+- **Frontend:** React + Vite with polished UI
+- **Backend:** Express with specialized endpoints
+- **Database:** SQLite with custom fields
+- **SDK:** TicketKit with 2 custom workflows
+
+**Pain Points Solved:**
+1. Vendor follow-up tracking (ghosting detection)
+2. Client decision visibility
+3. Approval audit trail
+4. Centralized contact information
+5. Task dependencies
+6. Multi-event dashboard
+
+**Use Cases:** Wedding planners, event coordinators, hospitality services
+
+[View Architecture Diagram](./wedding-planner/architecture.svg)
+
+---
+
+## 🔌 Feature Comparison
+
+| Feature | React Kanban | Wedding Planner |
+|---------|:------------:|:---------------:|
+| Kanban board | ✅ | ✅ |
+| Create/update/delete tickets | ✅ | ✅ |
+| Default workflow | ✅ | |
+| Custom workflows | | ✅ (2 workflows) |
+| Custom fields | | ✅ |
+| Multi-board architecture | | ✅ |
+| Specialized endpoints | | ✅ |
+| Activity logs | ✅ | ✅ |
+| Search & filtering | ✅ | ✅ |
+| Priority management | ✅ | ✅ |
+| Drag-and-drop | ✅ | |
+| Industry-specific UI | | ✅ |
 
 ## 🛠️ Running Examples
 
-Each example is self-contained. Navigate to the directory and follow its README:
+Each example is self-contained with its own package.json:
 
 ```bash
-# REST API
-cd 02-rest-api
-npm install
-npm start
-# → http://localhost:3000
-
 # React Kanban
-cd 03-react-kanban
-npm run install:all
-npm run dev
-# → http://localhost:5173
+cd react-kanban
+npm run install:all  # Installs both client and server
+npm run dev          # Runs both concurrently
+# Or separately:
+cd server && npm start
+cd client && npm run dev
 
-# CLI Tool
-cd 04-cli-tool
-npm install
-npm link
-ticket help
-
-# Vet Clinic
-cd verticals/vet-clinic
-npm install
-npm start
-# → http://localhost:3000
+# Wedding Planner
+cd wedding-planner
+npm run install:all  # Installs both client and server
+npm run dev          # Runs both concurrently
+# Or separately:
+cd server && npm start
+cd client && npm run dev
 ```
 
-## 📝 Creating Your Own Example
+## 📝 Creating Your Own Vertical
 
-1. **Pick a use case** — What problem are you solving?
+Both examples demonstrate how to build vertical SaaS applications with TicketKit:
 
-2. **Choose a workflow** — Use built-in or create custom:
-   ```javascript
-   // Built-in: kanban, scrum, support, simple
-   const board = await kit.createBoard({ workflow_id: 'kanban' });
-   
-   // Custom
-   await kit.createWorkflow({
-     id: 'my-flow',
-     states: ['draft', 'review', 'published'],
-     transitions: { /* ... */ }
-   });
-   ```
+### 1. Define Your Workflow
 
-3. **Define custom fields** — What data do you need?
-   ```javascript
-   const ticket = await kit.createTicket({
-     title: 'My Item',
-     custom_fields: {
-       client_name: 'Acme Corp',
-       due_date: '2024-03-01',
-       // ... any data you need
-     }
-   });
-   ```
+```javascript
+await kit.createWorkflow({
+  id: 'my-vertical-flow',
+  name: 'My Workflow',
+  states: ['state1', 'state2', 'state3'],
+  transitions: {
+    state1: ['state2'],
+    state2: ['state3'],
+    state3: []
+  }
+});
+```
 
-4. **Build the API** — Use Express or your framework of choice
+### 2. Add Custom Fields
 
-5. **Add a frontend** — React, Vue, vanilla JS, or CLI
+```javascript
+const ticket = await kit.createTicket({
+  board_id: board.id,
+  title: 'My Item',
+  custom_fields: {
+    client_name: 'John Doe',
+    contact_email: 'john@example.com',
+    deadline: '2024-12-31',
+    // ... any domain-specific data
+  }
+});
+```
+
+### 3. Build Specialized Endpoints
+
+```javascript
+// Example: Find stale items
+app.get('/api/board/:id/stale-items', async (req, res) => {
+  const tickets = await kit.listTickets({
+    board_id: req.params.id,
+    status: 'pending'
+  });
+
+  const stale = tickets.filter(t => {
+    const daysSinceUpdate = (Date.now() - new Date(t.updated_at)) / (1000 * 60 * 60 * 24);
+    return daysSinceUpdate > 7;
+  });
+
+  res.json(stale);
+});
+```
+
+### 4. Create Industry-Specific UI
+
+See the Wedding Planner example for:
+- Multi-board dashboard
+- Status-specific styling
+- Alert systems (ghosting detection)
+- Contact sheets
+- Decision queues
+
+## 🎯 Potential Verticals
+
+TicketKit can power vertical SaaS for:
+
+- **Healthcare:** Patient flow, appointment tracking (vet clinics, dental labs)
+- **Events:** Wedding planning, catering, venue management
+- **Real Estate:** Property pipeline, client journey
+- **Education:** Student applications, course planning
+- **Legal:** Case management, document workflow
+- **Construction:** Project milestones, vendor coordination
+- **Hospitality:** Reservations, guest services
 
 ## 🤝 Contributing Examples
 
 We welcome new examples! Ideas:
 
-- **Integrations** — Slack, Discord, GitHub, Zapier
-- **Frameworks** — Next.js, Remix, Fastify, Hono
-- **Verticals** — Dental lab, funeral home, auto shop, church
-- **Features** — Real-time with WebSockets, file attachments
+- **Integrations** — Slack, Discord, GitHub webhooks
+- **Frameworks** — Next.js, Remix, SvelteKit
+- **Verticals** — Dental lab, auto shop, funeral home
+- **Features** — File attachments, real-time WebSockets
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 

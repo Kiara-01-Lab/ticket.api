@@ -453,7 +453,7 @@ npm run demo
 
 ## 📄 License
 
-MIT © Your Name
+MIT © 2025 Kiara Lab
 
 ---
 
