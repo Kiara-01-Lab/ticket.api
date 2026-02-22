@@ -1,6 +1,6 @@
 # 🎫 ticket.api
 
-**Build your own Trello, Asana, or Jira in minutes.**
+**Build your own task board like JIRA, Trello, Asana in minutes.**
 
 A lightweight JavaScript SDK for creating task boards, ticket systems, and project trackers. No complex setup — just install and start building.
 
