@@ -245,12 +245,26 @@ class SQLiteAdapter extends StorageAdapter {
         UNIQUE(board_id, snapshot_date, status)
       );
 
+      CREATE TABLE IF NOT EXISTS attachments (
+        id TEXT PRIMARY KEY,
+        ticket_id TEXT NOT NULL,
+        filename TEXT NOT NULL,
+        original_filename TEXT NOT NULL,
+        mime_type TEXT NOT NULL,
+        size_bytes INTEGER NOT NULL,
+        storage_path TEXT NOT NULL,
+        uploaded_by TEXT NOT NULL,
+        created_at TEXT DEFAULT (datetime('now')),
+        FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE
+      );
+
       CREATE INDEX IF NOT EXISTS idx_tickets_board ON tickets(board_id);
       CREATE INDEX IF NOT EXISTS idx_tickets_status ON tickets(status);
       CREATE INDEX IF NOT EXISTS idx_tickets_assignees ON tickets(assignees);
       CREATE INDEX IF NOT EXISTS idx_comments_ticket ON comments(ticket_id);
       CREATE INDEX IF NOT EXISTS idx_activities_ticket ON activities(ticket_id);
       CREATE INDEX IF NOT EXISTS idx_snapshots_board_date ON status_snapshots(board_id, snapshot_date);
+      CREATE INDEX IF NOT EXISTS idx_attachments_ticket ON attachments(ticket_id);
     `);
 
     // Insert default workflows
@@ -648,6 +662,66 @@ class SQLiteAdapter extends StorageAdapter {
       states: data.states,
       transitions: data.transitions
     };
+  }
+
+  // Attachments
+  async createAttachment(data) {
+    const attachment = {
+      id: data.id || nanoid(10),
+      ticket_id: data.ticket_id,
+      filename: data.filename,
+      original_filename: data.original_filename,
+      mime_type: data.mime_type,
+      size_bytes: data.size_bytes,
+      storage_path: data.storage_path,
+      uploaded_by: data.uploaded_by,
+      created_at: new Date().toISOString()
+    };
+
+    const stmt = this.db.prepare(
+      'INSERT INTO attachments (id, ticket_id, filename, original_filename, mime_type, size_bytes, storage_path, uploaded_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    );
+    stmt.run([
+      attachment.id,
+      attachment.ticket_id,
+      attachment.filename,
+      attachment.original_filename,
+      attachment.mime_type,
+      attachment.size_bytes,
+      attachment.storage_path,
+      attachment.uploaded_by,
+      attachment.created_at
+    ]);
+    stmt.free();
+
+    return attachment;
+  }
+
+  async getAttachment(id) {
+    const stmt = this.db.prepare('SELECT * FROM attachments WHERE id = ?');
+    stmt.bind([id]);
+    const result = stmt.step() ? stmt.getAsObject() : null;
+    stmt.free();
+    return result;
+  }
+
+  async listAttachments(ticketId) {
+    const stmt = this.db.prepare('SELECT * FROM attachments WHERE ticket_id = ? ORDER BY created_at DESC');
+    stmt.bind([ticketId]);
+
+    const results = [];
+    while (stmt.step()) {
+      results.push(stmt.getAsObject());
+    }
+    stmt.free();
+
+    return results;
+  }
+
+  async deleteAttachment(id) {
+    const stmt = this.db.prepare('DELETE FROM attachments WHERE id = ?');
+    stmt.run([id]);
+    stmt.free();
   }
 
   async takeSnapshot(boardId, date = null) {
