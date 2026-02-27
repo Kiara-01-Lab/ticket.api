@@ -1,6 +1,6 @@
 {
   "name": "ticketkit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Lightweight SDK for building ticket/task management systems (Trello, Asana, Jira, Zendesk alternatives)",
   "main": "index.js",
   "types": "index.d.ts",
@@ -64,6 +64,7 @@
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "nanoid": "^5.1.6",
+    "pg": "^8.18.0",
     "sql.js": "^1.13.0",
     "uuid": "^13.0.0"
   },

@@ -157,6 +157,12 @@ class StorageAdapter {
   // Workflows
   async getWorkflow(id) { throw new Error('Not implemented'); }
   async createWorkflow(workflow) { throw new Error('Not implemented'); }
+
+  // Attachments
+  async createAttachment(attachment) { throw new Error('Not implemented'); }
+  async getAttachment(id) { throw new Error('Not implemented'); }
+  async listAttachments(ticketId) { throw new Error('Not implemented'); }
+  async deleteAttachment(id) { throw new Error('Not implemented'); }
 }
 
 // ============================================================================
@@ -227,12 +233,24 @@ class SQLiteAdapter extends StorageAdapter {
         states TEXT NOT NULL,
         transitions TEXT NOT NULL
       );
-      
+
+      CREATE TABLE IF NOT EXISTS status_snapshots (
+        id TEXT PRIMARY KEY,
+        board_id TEXT NOT NULL,
+        snapshot_date TEXT NOT NULL,
+        status TEXT NOT NULL,
+        count INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT DEFAULT (datetime('now')),
+        FOREIGN KEY (board_id) REFERENCES boards(id) ON DELETE CASCADE,
+        UNIQUE(board_id, snapshot_date, status)
+      );
+
       CREATE INDEX IF NOT EXISTS idx_tickets_board ON tickets(board_id);
       CREATE INDEX IF NOT EXISTS idx_tickets_status ON tickets(status);
       CREATE INDEX IF NOT EXISTS idx_tickets_assignees ON tickets(assignees);
       CREATE INDEX IF NOT EXISTS idx_comments_ticket ON comments(ticket_id);
       CREATE INDEX IF NOT EXISTS idx_activities_ticket ON activities(ticket_id);
+      CREATE INDEX IF NOT EXISTS idx_snapshots_board_date ON status_snapshots(board_id, snapshot_date);
     `);
 
     // Insert default workflows
@@ -546,6 +564,54 @@ class SQLiteAdapter extends StorageAdapter {
     return results;
   }
 
+  async queryActivity(boardId, opts = {}) {
+    const { from, to, actors, actions, limit } = opts;
+    let sql = `SELECT a.* FROM activities a
+               INNER JOIN tickets t ON a.ticket_id = t.id
+               WHERE t.board_id = ?`;
+    const params = [boardId];
+
+    if (from) {
+      sql += ' AND a.created_at >= ?';
+      params.push(from);
+    }
+
+    if (to) {
+      sql += ' AND a.created_at <= ?';
+      params.push(to);
+    }
+
+    if (actors && actors.length > 0) {
+      sql += ` AND a.actor IN (${actors.map(() => '?').join(',')})`;
+      params.push(...actors);
+    }
+
+    if (actions && actions.length > 0) {
+      sql += ` AND a.action IN (${actions.map(() => '?').join(',')})`;
+      params.push(...actions);
+    }
+
+    sql += ' ORDER BY a.created_at DESC';
+
+    if (limit) {
+      sql += ' LIMIT ?';
+      params.push(limit);
+    }
+
+    const results = [];
+    const stmt = this.db.prepare(sql);
+    stmt.bind(params);
+    while (stmt.step()) {
+      const row = stmt.getAsObject();
+      results.push({
+        ...row,
+        changes: JSON.parse(row.changes)
+      });
+    }
+    stmt.free();
+    return results;
+  }
+
   // Workflows
   async getWorkflow(id) {
     const stmt = this.db.prepare('SELECT * FROM workflows WHERE id = ?');
@@ -582,6 +648,792 @@ class SQLiteAdapter extends StorageAdapter {
       states: data.states,
       transitions: data.transitions
     };
+  }
+
+  async takeSnapshot(boardId, date = null) {
+    const snapshotDate = date || new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
+    // Get board to validate and get workflow
+    const board = await this.getBoard(boardId);
+    if (!board) throw new Error(`Board ${boardId} not found`);
+
+    const workflow = await this.getWorkflow(board.workflow_id);
+
+    // Count tickets per status
+    const snapshots = [];
+    for (const status of workflow.states) {
+      const stmt = this.db.prepare(
+        'SELECT COUNT(*) as count FROM tickets WHERE board_id = ? AND status = ?'
+      );
+      stmt.bind([boardId, status]);
+      let count = 0;
+      if (stmt.step()) {
+        count = stmt.getAsObject().count;
+      }
+      stmt.free();
+
+      // Insert or replace snapshot
+      const id = nanoid(10);
+      const insertStmt = this.db.prepare(
+        'INSERT OR REPLACE INTO status_snapshots (id, board_id, snapshot_date, status, count) VALUES (?, ?, ?, ?, ?)'
+      );
+      insertStmt.run([id, boardId, snapshotDate, status, count]);
+      insertStmt.free();
+
+      snapshots.push({ id, board_id: boardId, snapshot_date: snapshotDate, status, count });
+    }
+
+    return snapshots;
+  }
+
+  async getCFDData(boardId, options = {}) {
+    const { from, to } = options;
+
+    let sql = 'SELECT snapshot_date, status, count FROM status_snapshots WHERE board_id = ?';
+    const params = [boardId];
+
+    if (from) {
+      sql += ' AND snapshot_date >= ?';
+      params.push(from);
+    }
+    if (to) {
+      sql += ' AND snapshot_date <= ?';
+      params.push(to);
+    }
+
+    sql += ' ORDER BY snapshot_date ASC, status ASC';
+
+    const results = [];
+    const stmt = this.db.prepare(sql);
+    stmt.bind(params);
+    while (stmt.step()) {
+      results.push(stmt.getAsObject());
+    }
+    stmt.free();
+
+    // Group by date for easier frontend consumption
+    const grouped = {};
+    for (const row of results) {
+      if (!grouped[row.snapshot_date]) {
+        grouped[row.snapshot_date] = { date: row.snapshot_date };
+      }
+      grouped[row.snapshot_date][row.status] = row.count;
+    }
+
+    return Object.values(grouped);
+  }
+
+  async backfillSnapshots(boardId, options = {}) {
+    const { from, to } = options;
+
+    // Get board and workflow
+    const board = await this.getBoard(boardId);
+    if (!board) throw new Error(`Board ${boardId} not found`);
+
+    const workflow = await this.getWorkflow(board.workflow_id);
+
+    // Get all status change activities for this board's tickets
+    let sql = `
+      SELECT a.created_at, a.changes, t.status as current_status
+      FROM activities a
+      JOIN tickets t ON a.ticket_id = t.id
+      WHERE t.board_id = ? AND a.action = 'status_changed'
+    `;
+    const params = [boardId];
+
+    if (from) {
+      sql += ' AND date(a.created_at) >= ?';
+      params.push(from);
+    }
+    if (to) {
+      sql += ' AND date(a.created_at) <= ?';
+      params.push(to);
+    }
+
+    sql += ' ORDER BY a.created_at ASC';
+
+    // For simplicity, we'll take snapshots for each unique date in the activity log
+    const dates = new Set();
+    const stmt = this.db.prepare(sql);
+    stmt.bind(params);
+    while (stmt.step()) {
+      const row = stmt.getAsObject();
+      const date = row.created_at.split('T')[0];
+      dates.add(date);
+    }
+    stmt.free();
+
+    // Take snapshot for each date
+    const results = [];
+    for (const date of Array.from(dates).sort()) {
+      const snapshots = await this.takeSnapshot(boardId, date);
+      results.push(...snapshots);
+    }
+
+    return results;
+  }
+}
+
+// ============================================================================
+// POSTGRESQL STORAGE ADAPTER
+// ============================================================================
+
+class PostgreSQLAdapter extends StorageAdapter {
+  constructor(connectionString) {
+    super();
+    this.connectionString = connectionString;
+    this.pool = null;
+  }
+
+  async init() {
+    const { Pool } = require('pg');
+    // Enable SSL for cloud databases (detected by sslmode parameter or cloud host)
+    const needsSSL = this.connectionString.includes('sslmode=require') ||
+                     this.connectionString.includes('.supabase.com') ||
+                     this.connectionString.includes('.amazonaws.com');
+
+    // Remove problematic query parameters from connection string
+    let connString = this.connectionString;
+    if (needsSSL && connString.includes('?')) {
+      const [baseUrl, queryString] = connString.split('?');
+      const params = new URLSearchParams(queryString);
+
+      // Remove problematic parameters
+      params.delete('sslmode');
+      params.delete('supa');
+
+      // Reconstruct connection string
+      const remainingParams = params.toString();
+      connString = remainingParams ? `${baseUrl}?${remainingParams}` : baseUrl;
+    }
+
+    this.pool = new Pool({
+      connectionString: connString,
+      ssl: needsSSL ? { rejectUnauthorized: false } : false
+    });
+
+    // Create tables
+    await this.pool.query(`
+      CREATE TABLE IF NOT EXISTS boards (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        description TEXT DEFAULT '',
+        workflow_id TEXT DEFAULT 'kanban',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS tickets (
+        id TEXT PRIMARY KEY,
+        board_id TEXT NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT DEFAULT '',
+        status TEXT DEFAULT 'backlog',
+        priority TEXT DEFAULT 'medium',
+        labels JSONB DEFAULT '[]',
+        assignees JSONB DEFAULT '[]',
+        parent_id TEXT,
+        custom_fields JSONB DEFAULT '{}',
+        position INTEGER DEFAULT 0,
+        due_date TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (board_id) REFERENCES boards(id) ON DELETE CASCADE
+      );
+
+      CREATE TABLE IF NOT EXISTS comments (
+        id TEXT PRIMARY KEY,
+        ticket_id TEXT NOT NULL,
+        author TEXT NOT NULL,
+        content TEXT NOT NULL,
+        parent_id TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE
+      );
+
+      CREATE TABLE IF NOT EXISTS activities (
+        id TEXT PRIMARY KEY,
+        ticket_id TEXT NOT NULL,
+        board_id TEXT NOT NULL,
+        actor TEXT NOT NULL,
+        action TEXT NOT NULL,
+        changes JSONB DEFAULT '{}',
+        created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE,
+        FOREIGN KEY (board_id) REFERENCES boards(id) ON DELETE CASCADE
+      );
+
+      CREATE TABLE IF NOT EXISTS attachments (
+        id TEXT PRIMARY KEY,
+        ticket_id TEXT NOT NULL,
+        filename TEXT NOT NULL,
+        original_filename TEXT NOT NULL,
+        mime_type TEXT NOT NULL,
+        size_bytes INTEGER NOT NULL,
+        storage_path TEXT NOT NULL,
+        uploaded_by TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE
+      );
+
+      CREATE TABLE IF NOT EXISTS workflows (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        states JSONB NOT NULL,
+        transitions JSONB NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS status_snapshots (
+        id TEXT PRIMARY KEY,
+        board_id TEXT NOT NULL,
+        snapshot_date DATE NOT NULL,
+        status TEXT NOT NULL,
+        count INTEGER NOT NULL DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (board_id) REFERENCES boards(id) ON DELETE CASCADE,
+        UNIQUE(board_id, snapshot_date, status)
+      );
+    `);
+
+    // Create indexes
+    await this.pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_tickets_board ON tickets(board_id);
+      CREATE INDEX IF NOT EXISTS idx_tickets_status ON tickets(status);
+      CREATE INDEX IF NOT EXISTS idx_comments_ticket ON comments(ticket_id);
+      CREATE INDEX IF NOT EXISTS idx_activities_ticket ON activities(ticket_id);
+      CREATE INDEX IF NOT EXISTS idx_activities_board_date ON activities(board_id, created_at);
+      CREATE INDEX IF NOT EXISTS idx_attachments_ticket ON attachments(ticket_id);
+      CREATE INDEX IF NOT EXISTS idx_snapshots_board_date ON status_snapshots(board_id, snapshot_date);
+    `);
+
+    // Insert default workflows
+    for (const [id, wf] of Object.entries(WORKFLOWS)) {
+      await this.pool.query(
+        `INSERT INTO workflows (id, name, states, transitions)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (id) DO NOTHING`,
+        [id, wf.name, JSON.stringify(wf.states), JSON.stringify(wf.transitions)]
+      );
+    }
+
+    return this;
+  }
+
+  async close() {
+    if (this.pool) await this.pool.end();
+  }
+
+  // Boards
+  async createBoard(data) {
+    const board = {
+      id: data.id || nanoid(10),
+      name: data.name,
+      description: data.description || '',
+      workflow_id: data.workflow_id || 'kanban',
+      created_at: new Date().toISOString()
+    };
+
+    await this.pool.query(
+      'INSERT INTO boards (id, name, description, workflow_id, created_at) VALUES ($1, $2, $3, $4, $5)',
+      [board.id, board.name, board.description, board.workflow_id, board.created_at]
+    );
+
+    return board;
+  }
+
+  async getBoard(id) {
+    const result = await this.pool.query('SELECT * FROM boards WHERE id = $1', [id]);
+    return result.rows[0] || null;
+  }
+
+  async listBoards() {
+    const result = await this.pool.query('SELECT * FROM boards ORDER BY created_at DESC');
+    return result.rows;
+  }
+
+  async updateBoard(id, updates) {
+    const fields = [];
+    const values = [];
+    let paramIndex = 1;
+
+    for (const [key, value] of Object.entries(updates)) {
+      if (['name', 'description', 'workflow_id'].includes(key)) {
+        fields.push(`${key} = $${paramIndex++}`);
+        values.push(value);
+      }
+    }
+    if (fields.length === 0) return this.getBoard(id);
+
+    values.push(id);
+    await this.pool.query(`UPDATE boards SET ${fields.join(', ')} WHERE id = $${paramIndex}`, values);
+    return this.getBoard(id);
+  }
+
+  async deleteBoard(id) {
+    await this.pool.query('DELETE FROM boards WHERE id = $1', [id]);
+  }
+
+  // Tickets
+  async createTicket(data) {
+    const ticket = {
+      id: data.id || nanoid(10),
+      board_id: data.board_id,
+      title: data.title,
+      description: data.description || '',
+      status: data.status || 'backlog',
+      priority: data.priority || 'medium',
+      labels: data.labels || [],
+      assignees: data.assignees || [],
+      parent_id: data.parent_id || null,
+      custom_fields: data.custom_fields || {},
+      position: data.position || 0,
+      due_date: data.due_date || null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    await this.pool.query(`
+      INSERT INTO tickets (id, board_id, title, description, status, priority, labels, assignees, parent_id, custom_fields, position, due_date, created_at, updated_at)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+    `, [
+      ticket.id, ticket.board_id, ticket.title, ticket.description, ticket.status,
+      ticket.priority, JSON.stringify(ticket.labels), JSON.stringify(ticket.assignees),
+      ticket.parent_id, JSON.stringify(ticket.custom_fields), ticket.position,
+      ticket.due_date, ticket.created_at, ticket.updated_at
+    ]);
+
+    return ticket;
+  }
+
+  async getTicket(id) {
+    const result = await this.pool.query('SELECT * FROM tickets WHERE id = $1', [id]);
+    return result.rows[0] ? this._parseTicket(result.rows[0]) : null;
+  }
+
+  _parseTicket(row) {
+    return {
+      ...row,
+      labels: typeof row.labels === 'string' ? JSON.parse(row.labels) : row.labels,
+      assignees: typeof row.assignees === 'string' ? JSON.parse(row.assignees) : row.assignees,
+      custom_fields: typeof row.custom_fields === 'string' ? JSON.parse(row.custom_fields) : row.custom_fields
+    };
+  }
+
+  async listTickets(query = {}) {
+    let sql = 'SELECT * FROM tickets WHERE 1=1';
+    const params = [];
+    let paramIndex = 1;
+
+    if (query.board_id) {
+      sql += ` AND board_id = $${paramIndex++}`;
+      params.push(query.board_id);
+    }
+    if (query.status) {
+      sql += ` AND status = $${paramIndex++}`;
+      params.push(query.status);
+    }
+    if (query.priority) {
+      sql += ` AND priority = $${paramIndex++}`;
+      params.push(query.priority);
+    }
+    if (query.assignee) {
+      sql += ` AND assignees::jsonb @> $${paramIndex++}::jsonb`;
+      params.push(JSON.stringify([query.assignee]));
+    }
+    if (query.label) {
+      sql += ` AND labels::jsonb @> $${paramIndex++}::jsonb`;
+      params.push(JSON.stringify([query.label]));
+    }
+    if (query.parent_id !== undefined) {
+      if (query.parent_id === null) {
+        sql += ' AND parent_id IS NULL';
+      } else {
+        sql += ` AND parent_id = $${paramIndex++}`;
+        params.push(query.parent_id);
+      }
+    }
+    if (query.search) {
+      sql += ` AND (title ILIKE $${paramIndex} OR description ILIKE $${paramIndex})`;
+      params.push(`%${query.search}%`);
+      paramIndex++;
+    }
+
+    sql += ' ORDER BY position ASC, created_at DESC';
+
+    if (query.limit) {
+      sql += ` LIMIT $${paramIndex++}`;
+      params.push(query.limit);
+    }
+    if (query.offset) {
+      sql += ` OFFSET $${paramIndex++}`;
+      params.push(query.offset);
+    }
+
+    const result = await this.pool.query(sql, params);
+    return result.rows.map(row => this._parseTicket(row));
+  }
+
+  async updateTicket(id, updates) {
+    const fields = [];
+    const values = [];
+    let paramIndex = 1;
+
+    const allowedFields = ['title', 'description', 'status', 'priority', 'labels', 'assignees',
+                           'parent_id', 'custom_fields', 'position', 'due_date'];
+
+    for (const [key, value] of Object.entries(updates)) {
+      if (allowedFields.includes(key)) {
+        if (['labels', 'assignees', 'custom_fields'].includes(key)) {
+          fields.push(`${key} = $${paramIndex++}::jsonb`);
+          values.push(JSON.stringify(value));
+        } else {
+          fields.push(`${key} = $${paramIndex++}`);
+          values.push(value);
+        }
+      }
+    }
+
+    if (fields.length === 0) return this.getTicket(id);
+
+    fields.push(`updated_at = $${paramIndex++}`);
+    values.push(new Date().toISOString());
+    values.push(id);
+
+    await this.pool.query(
+      `UPDATE tickets SET ${fields.join(', ')} WHERE id = $${paramIndex}`,
+      values
+    );
+    return this.getTicket(id);
+  }
+
+  async deleteTicket(id) {
+    await this.pool.query('DELETE FROM tickets WHERE id = $1', [id]);
+  }
+
+  async bulkUpdateTickets(ids, updates) {
+    const fields = [];
+    const values = [];
+    let paramIndex = 1;
+
+    const allowedFields = ['status', 'priority', 'position'];
+    for (const [key, value] of Object.entries(updates)) {
+      if (allowedFields.includes(key)) {
+        fields.push(`${key} = $${paramIndex++}`);
+        values.push(value);
+      }
+    }
+
+    if (fields.length === 0) return;
+
+    fields.push(`updated_at = $${paramIndex++}`);
+    values.push(new Date().toISOString());
+    values.push(ids);
+
+    await this.pool.query(
+      `UPDATE tickets SET ${fields.join(', ')} WHERE id = ANY($${paramIndex})`,
+      values
+    );
+  }
+
+  // Comments
+  async createComment(data) {
+    const comment = {
+      id: data.id || nanoid(10),
+      ticket_id: data.ticket_id,
+      author: data.author,
+      content: data.content,
+      parent_id: data.parent_id || null,
+      created_at: new Date().toISOString()
+    };
+
+    await this.pool.query(
+      'INSERT INTO comments (id, ticket_id, author, content, parent_id, created_at) VALUES ($1, $2, $3, $4, $5, $6)',
+      [comment.id, comment.ticket_id, comment.author, comment.content, comment.parent_id, comment.created_at]
+    );
+
+    return comment;
+  }
+
+  async listComments(ticketId) {
+    const result = await this.pool.query(
+      'SELECT * FROM comments WHERE ticket_id = $1 ORDER BY created_at ASC',
+      [ticketId]
+    );
+    return result.rows;
+  }
+
+  async deleteComment(id) {
+    await this.pool.query('DELETE FROM comments WHERE id = $1', [id]);
+  }
+
+  // Activities
+  async createActivity(data) {
+    // Get board_id from ticket
+    const ticketResult = await this.pool.query(
+      'SELECT board_id FROM tickets WHERE id = $1',
+      [data.ticket_id]
+    );
+
+    if (!ticketResult.rows[0]) {
+      throw new Error(`Ticket ${data.ticket_id} not found`);
+    }
+
+    const board_id = ticketResult.rows[0].board_id;
+
+    const activity = {
+      id: data.id || nanoid(10),
+      ticket_id: data.ticket_id,
+      board_id: board_id,
+      actor: data.actor,
+      action: data.action,
+      changes: data.changes || {},
+      created_at: new Date().toISOString()
+    };
+
+    await this.pool.query(
+      'INSERT INTO activities (id, ticket_id, board_id, actor, action, changes, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+      [activity.id, activity.ticket_id, activity.board_id, activity.actor, activity.action,
+       JSON.stringify(activity.changes), activity.created_at]
+    );
+
+    return activity;
+  }
+
+  async listActivities(ticketId, limit = 50) {
+    const result = await this.pool.query(
+      'SELECT * FROM activities WHERE ticket_id = $1 ORDER BY created_at DESC LIMIT $2',
+      [ticketId, limit]
+    );
+    return result.rows.map(row => ({
+      ...row,
+      changes: typeof row.changes === 'string' ? JSON.parse(row.changes) : row.changes
+    }));
+  }
+
+  async queryActivity(boardId, opts = {}) {
+    const { from, to, actors, actions, limit } = opts;
+    let sql = 'SELECT * FROM activities WHERE board_id = $1';
+    const params = [boardId];
+    let paramIndex = 2;
+
+    if (from) {
+      sql += ` AND created_at >= $${paramIndex++}`;
+      params.push(from);
+    }
+
+    if (to) {
+      sql += ` AND created_at <= $${paramIndex++}`;
+      params.push(to);
+    }
+
+    if (actors && actors.length > 0) {
+      sql += ` AND actor = ANY($${paramIndex++})`;
+      params.push(actors);
+    }
+
+    if (actions && actions.length > 0) {
+      sql += ` AND action = ANY($${paramIndex++})`;
+      params.push(actions);
+    }
+
+    sql += ' ORDER BY created_at DESC';
+
+    if (limit) {
+      sql += ` LIMIT $${paramIndex++}`;
+      params.push(limit);
+    }
+
+    const result = await this.pool.query(sql, params);
+    return result.rows.map(row => ({
+      ...row,
+      changes: typeof row.changes === 'string' ? JSON.parse(row.changes) : row.changes
+    }));
+  }
+
+  // Workflows
+  async getWorkflow(id) {
+    const result = await this.pool.query('SELECT * FROM workflows WHERE id = $1', [id]);
+    if (result.rows[0]) {
+      const row = result.rows[0];
+      return {
+        ...row,
+        states: typeof row.states === 'string' ? JSON.parse(row.states) : row.states,
+        transitions: typeof row.transitions === 'string' ? JSON.parse(row.transitions) : row.transitions
+      };
+    }
+    return WORKFLOWS[id] || null;
+  }
+
+  async createWorkflow(data) {
+    const workflow = {
+      id: data.id || nanoid(10),
+      name: data.name,
+      states: data.states,
+      transitions: data.transitions
+    };
+
+    await this.pool.query(
+      `INSERT INTO workflows (id, name, states, transitions)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (id) DO UPDATE SET name = $2, states = $3, transitions = $4`,
+      [workflow.id, workflow.name, JSON.stringify(workflow.states), JSON.stringify(workflow.transitions)]
+    );
+
+    return workflow;
+  }
+
+  // Attachments
+  async createAttachment(data) {
+    const attachment = {
+      id: data.id || nanoid(10),
+      ticket_id: data.ticket_id,
+      filename: data.filename,
+      original_filename: data.original_filename,
+      mime_type: data.mime_type,
+      size_bytes: data.size_bytes,
+      storage_path: data.storage_path,
+      uploaded_by: data.uploaded_by,
+      created_at: new Date().toISOString()
+    };
+
+    await this.pool.query(
+      'INSERT INTO attachments (id, ticket_id, filename, original_filename, mime_type, size_bytes, storage_path, uploaded_by, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+      [attachment.id, attachment.ticket_id, attachment.filename, attachment.original_filename,
+       attachment.mime_type, attachment.size_bytes, attachment.storage_path, attachment.uploaded_by, attachment.created_at]
+    );
+
+    return attachment;
+  }
+
+  async getAttachment(id) {
+    const result = await this.pool.query('SELECT * FROM attachments WHERE id = $1', [id]);
+    return result.rows[0] || null;
+  }
+
+  async listAttachments(ticketId) {
+    const result = await this.pool.query(
+      'SELECT * FROM attachments WHERE ticket_id = $1 ORDER BY created_at DESC',
+      [ticketId]
+    );
+    return result.rows;
+  }
+
+  async deleteAttachment(id) {
+    await this.pool.query('DELETE FROM attachments WHERE id = $1', [id]);
+  }
+
+  async takeSnapshot(boardId, date = null) {
+    const snapshotDate = date || new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
+    // Get board to validate and get workflow
+    const board = await this.getBoard(boardId);
+    if (!board) throw new Error(`Board ${boardId} not found`);
+
+    const workflow = await this.getWorkflow(board.workflow_id);
+
+    // Count tickets per status
+    const snapshots = [];
+    for (const status of workflow.states) {
+      const result = await this.pool.query(
+        'SELECT COUNT(*) as count FROM tickets WHERE board_id = $1 AND status = $2',
+        [boardId, status]
+      );
+      const count = parseInt(result.rows[0].count);
+
+      // Insert or update snapshot
+      const id = nanoid(10);
+      await this.pool.query(
+        `INSERT INTO status_snapshots (id, board_id, snapshot_date, status, count)
+         VALUES ($1, $2, $3, $4, $5)
+         ON CONFLICT (board_id, snapshot_date, status)
+         DO UPDATE SET count = $5`,
+        [id, boardId, snapshotDate, status, count]
+      );
+
+      snapshots.push({ id, board_id: boardId, snapshot_date: snapshotDate, status, count });
+    }
+
+    return snapshots;
+  }
+
+  async getCFDData(boardId, options = {}) {
+    const { from, to } = options;
+
+    let sql = 'SELECT snapshot_date, status, count FROM status_snapshots WHERE board_id = $1';
+    const params = [boardId];
+    let paramIndex = 2;
+
+    if (from) {
+      sql += ` AND snapshot_date >= $${paramIndex++}`;
+      params.push(from);
+    }
+    if (to) {
+      sql += ` AND snapshot_date <= $${paramIndex++}`;
+      params.push(to);
+    }
+
+    sql += ' ORDER BY snapshot_date ASC, status ASC';
+
+    const result = await this.pool.query(sql, params);
+
+    // Group by date for easier frontend consumption
+    const grouped = {};
+    for (const row of result.rows) {
+      const dateStr = row.snapshot_date instanceof Date
+        ? row.snapshot_date.toISOString().split('T')[0]
+        : row.snapshot_date;
+
+      if (!grouped[dateStr]) {
+        grouped[dateStr] = { date: dateStr };
+      }
+      grouped[dateStr][row.status] = row.count;
+    }
+
+    return Object.values(grouped);
+  }
+
+  async backfillSnapshots(boardId, options = {}) {
+    const { from, to } = options;
+
+    // Get board and workflow
+    const board = await this.getBoard(boardId);
+    if (!board) throw new Error(`Board ${boardId} not found`);
+
+    const workflow = await this.getWorkflow(board.workflow_id);
+
+    // Get all unique dates from activity log
+    let sql = `
+      SELECT DISTINCT DATE(a.created_at) as activity_date
+      FROM activities a
+      JOIN tickets t ON a.ticket_id = t.id
+      WHERE t.board_id = $1 AND a.action = 'status_changed'
+    `;
+    const params = [boardId];
+    let paramIndex = 2;
+
+    if (from) {
+      sql += ` AND DATE(a.created_at) >= $${paramIndex++}`;
+      params.push(from);
+    }
+    if (to) {
+      sql += ` AND DATE(a.created_at) <= $${paramIndex++}`;
+      params.push(to);
+    }
+
+    sql += ' ORDER BY activity_date ASC';
+
+    const result = await this.pool.query(sql, params);
+
+    // Take snapshot for each date
+    const results = [];
+    for (const row of result.rows) {
+      const dateStr = row.activity_date instanceof Date
+        ? row.activity_date.toISOString().split('T')[0]
+        : row.activity_date;
+      const snapshots = await this.takeSnapshot(boardId, dateStr);
+      results.push(...snapshots);
+    }
+
+    return results;
   }
 }
 
@@ -803,6 +1655,80 @@ class TicketKit {
     return this.storage.createWorkflow(data);
   }
 
+  // Attachments
+  async createAttachment(data, actor = 'system') {
+    const attachment = await this.storage.createAttachment(data);
+
+    const ticket = await this.storage.getTicket(data.ticket_id);
+    if (ticket) {
+      await this.storage.createActivity({
+        ticket_id: data.ticket_id,
+        board_id: ticket.board_id,
+        actor,
+        action: 'attachment_added',
+        changes: { attachment_id: attachment.id, filename: data.original_filename }
+      });
+    }
+
+    this.emit('attachment:created', attachment);
+    return attachment;
+  }
+
+  async getAttachment(id) {
+    return this.storage.getAttachment(id);
+  }
+
+  async listAttachments(ticketId) {
+    return this.storage.listAttachments(ticketId);
+  }
+
+  async deleteAttachment(id, actor = 'system') {
+    const attachment = await this.storage.getAttachment(id);
+    if (!attachment) throw new Error(`Attachment ${id} not found`);
+
+    const ticket = await this.storage.getTicket(attachment.ticket_id);
+    if (!ticket) throw new Error(`Ticket ${attachment.ticket_id} not found`);
+
+    await this.storage.deleteAttachment(id);
+
+    await this.storage.createActivity({
+      ticket_id: attachment.ticket_id,
+      board_id: ticket.board_id,
+      actor,
+      action: 'attachment_deleted',
+      changes: { attachment_id: id, filename: attachment.original_filename }
+    });
+
+    this.emit('attachment:deleted', { id, attachment });
+  }
+
+  // Convenience wrapper for API endpoint
+  async addAttachment(ticketId, fileData, uploadedBy) {
+    const ticket = await this.storage.getTicket(ticketId);
+    if (!ticket) throw new Error(`Ticket ${ticketId} not found`);
+
+    const attachment = await this.storage.createAttachment({
+      ticket_id: ticketId,
+      filename: fileData.filename,
+      original_filename: fileData.original_filename,
+      mime_type: fileData.mime_type,
+      size_bytes: fileData.size_bytes,
+      storage_path: fileData.storage_path,
+      uploaded_by: uploadedBy
+    });
+
+    await this.storage.createActivity({
+      ticket_id: ticketId,
+      board_id: ticket.board_id,
+      actor: uploadedBy,
+      action: 'attachment_added',
+      changes: { attachment_id: attachment.id, filename: fileData.original_filename }
+    });
+
+    this.emit('attachment:added', attachment);
+    return attachment;
+  }
+
   // View helpers (computed queries)
   async getKanbanView(boardId) {
     const board = await this.storage.getBoard(boardId);
@@ -887,6 +1813,119 @@ class TicketKit {
     }
   }
 
+  // CFD (Cumulative Flow Diagram) Reports
+  async takeSnapshot(boardId, date = null) {
+    return this.storage.takeSnapshot(boardId, date);
+  }
+
+  async getCFDData(boardId, options = {}) {
+    return this.storage.getCFDData(boardId, options);
+  }
+
+  async backfillSnapshots(boardId, options = {}) {
+    return this.storage.backfillSnapshots(boardId, options);
+  }
+
+  // Activity Log Export
+  async exportActivityLog(boardId, opts = {}) {
+    const { format = 'json', timezone } = opts;
+    const logs = await this.storage.queryActivity(boardId, opts);
+
+    // Get ticket titles for the CSV
+    const ticketIds = [...new Set(logs.map(l => l.ticket_id))];
+    const tickets = {};
+    for (const ticketId of ticketIds) {
+      const ticket = await this.storage.getTicket(ticketId);
+      if (ticket) tickets[ticketId] = ticket.title;
+    }
+
+    // Format timestamp with timezone
+    const formatTimestamp = (timestamp) => {
+      const date = new Date(timestamp);
+      if (timezone) {
+        try {
+          return date.toLocaleString('en-US', {
+            timeZone: timezone,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+          }) + ` (${timezone})`;
+        } catch (err) {
+          // Invalid timezone, fallback to UTC
+          return date.toISOString().replace('T', ' ').replace('Z', ' UTC');
+        }
+      }
+      // No timezone specified, use UTC
+      return date.toISOString().replace('T', ' ').replace('Z', ' UTC');
+    };
+
+    if (format === 'csv') {
+      // CSV format: timestamp,ticket_id,ticket_title,actor,action,details
+      const rows = [['timestamp', 'ticket_id', 'ticket_title', 'actor', 'action', 'details']];
+
+      for (const log of logs) {
+        const details = this._formatActivityDetails(log);
+        rows.push([
+          formatTimestamp(log.created_at),
+          log.ticket_id,
+          tickets[log.ticket_id] || '',
+          log.actor,
+          log.action,
+          details
+        ]);
+      }
+
+      const csv = rows.map(row =>
+        row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+      ).join('\n');
+
+      return { data: csv, count: logs.length, format: 'csv' };
+    }
+
+    // JSON format
+    const enrichedLogs = logs.map(log => ({
+      ...log,
+      created_at: formatTimestamp(log.created_at),
+      ticket_title: tickets[log.ticket_id] || ''
+    }));
+
+    return { data: JSON.stringify(enrichedLogs, null, 2), count: logs.length, format: 'json' };
+  }
+
+  _formatActivityDetails(log) {
+    const { action, changes } = log;
+
+    if (action === 'status_changed' && changes.status) {
+      return `${changes.status.old} → ${changes.status.new}`;
+    }
+
+    if (action === 'commented' && changes.comment_id) {
+      return '';
+    }
+
+    if (action === 'attachment_added' && changes.filename) {
+      return `Added: ${changes.filename}`;
+    }
+
+    if (action === 'attachment_deleted' && changes.filename) {
+      return `Deleted: ${changes.filename}`;
+    }
+
+    if (action === 'created') {
+      return '';
+    }
+
+    if (action === 'assigned' && changes.assignees) {
+      return `Assigned to: ${changes.assignees.join(', ')}`;
+    }
+
+    return JSON.stringify(changes);
+  }
+
   // Cleanup
   async close() {
     await this.storage.close();
@@ -900,6 +1939,7 @@ class TicketKit {
 module.exports = {
   TicketKit,
   SQLiteAdapter,
+  PostgreSQLAdapter,
   StorageAdapter,
   WORKFLOWS
 };

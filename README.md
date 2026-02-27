@@ -95,8 +95,11 @@ const { columns } = await kit.getKanbanView(board.id);
 | **📝 Activity Log** | Automatic history of all changes |
 | **🔍 Search** | Find tickets with simple queries |
 | **📦 Subtasks** | Break tickets into smaller pieces |
-| **🔌 Pluggable** | SQLite included, easy to swap databases |
-| **📤 Export** | JSON import/export for backups |
+| **🗄️ PostgreSQL** | Production-ready database support (v0.2.0+) |
+| **📎 Attachments** | File upload tracking with metadata (v0.2.0+) |
+| **📊 CFD Reports** | Cumulative flow diagrams for metrics (v0.2.0+) |
+| **📤 Export** | JSON/CSV export for activity logs |
+| **🔌 Pluggable** | SQLite or PostgreSQL, easy to extend |
 
 ---
 
@@ -139,6 +142,59 @@ await kit.createWorkflow({
     published: []
   }
 });
+```
+
+---
+
+## 🗄️ PostgreSQL Setup (v0.2.0+)
+
+For production deployments, use PostgreSQL instead of in-memory SQLite:
+
+```javascript
+const { TicketKit, PostgreSQLAdapter } = require('ticketkit');
+
+// Connect to PostgreSQL
+const adapter = new PostgreSQLAdapter(process.env.DATABASE_URL);
+const kit = await TicketKit.create({ storage: adapter });
+
+// Use exactly the same API as SQLite!
+const board = await kit.createBoard({ name: 'Production Board' });
+```
+
+### Supported PostgreSQL Providers
+
+✅ **Supabase** - Automatic SSL detection
+✅ **AWS RDS** - Connection pooling included
+✅ **Railway** - Zero-config deployment
+✅ **Render** - Managed PostgreSQL
+✅ **Local** - PostgreSQL 12+
+
+### Environment Setup
+
+```bash
+# Example connection strings
+
+# Supabase
+DATABASE_URL=postgresql://user:pass@db.supabase.co:6543/postgres
+
+# AWS RDS
+DATABASE_URL=postgresql://user:pass@instance.region.rds.amazonaws.com:5432/dbname
+
+# Local
+DATABASE_URL=postgresql://localhost:5432/ticketkit
+```
+
+### Migration from SQLite
+
+```javascript
+// Step 1: Export from SQLite
+const sqliteKit = await TicketKit.create();
+const data = await sqliteKit.export();
+
+// Step 2: Import to PostgreSQL
+const pgAdapter = new PostgreSQLAdapter(process.env.DATABASE_URL);
+const pgKit = await TicketKit.create({ storage: pgAdapter });
+await pgKit.import(data);
 ```
 
 ---
@@ -237,6 +293,78 @@ const activity = await kit.getActivity(ticket.id);
 //   { actor: 'alice', action: 'status_changed', changes: { status: { old: 'backlog', new: 'todo' } } },
 //   { actor: 'bob', action: 'assigned', changes: { assignees: ['charlie'] } },
 //   { actor: 'charlie', action: 'commented', ... }
+// ]
+```
+
+### File attachments (v0.2.0+)
+
+```javascript
+// Track file uploads (storage handled separately)
+const attachment = await kit.createAttachment({
+  ticket_id: ticket.id,
+  filename: 'screenshot.png',
+  original_filename: 'Bug Screenshot.png',
+  mime_type: 'image/png',
+  size_bytes: 245760,
+  storage_path: '/uploads/abc123/screenshot.png',
+  uploaded_by: 'alice'
+});
+
+// List attachments
+const attachments = await kit.listAttachments(ticket.id);
+
+// Get attachment metadata
+const file = await kit.getAttachment(attachment.id);
+
+// Delete attachment
+await kit.deleteAttachment(attachment.id);
+```
+
+### Export activity logs (v0.2.0+)
+
+```javascript
+// Export as CSV
+const csv = await kit.exportActivityLog(board.id, {
+  format: 'csv',
+  from: '2025-02-01',
+  to: '2025-02-27',
+  timezone: 'America/New_York'
+});
+
+// Export as JSON
+const json = await kit.exportActivityLog(board.id, {
+  format: 'json',
+  actions: ['status_changed', 'assigned'],  // Filter by action types
+  limit: 1000
+});
+
+// Download the export
+const fs = require('fs');
+fs.writeFileSync('activity-export.csv', csv.data);
+```
+
+### Cumulative Flow Diagrams (v0.2.0+)
+
+```javascript
+// Take a snapshot of current ticket distribution
+await kit.takeSnapshot(board.id);
+
+// Backfill snapshots from activity history
+await kit.backfillSnapshots(board.id, {
+  from: '2025-02-01',
+  to: '2025-02-27'
+});
+
+// Get CFD data for charting
+const cfdData = await kit.getCFDData(board.id, {
+  from: '2025-02-01',
+  to: '2025-02-27'
+});
+
+// cfdData = [
+//   { date: '2025-02-01', backlog: 10, todo: 5, in_progress: 3, review: 2, done: 15 },
+//   { date: '2025-02-02', backlog: 9, todo: 6, in_progress: 4, review: 1, done: 16 },
+//   ...
 // ]
 ```
 

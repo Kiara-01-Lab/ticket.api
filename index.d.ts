@@ -59,10 +59,105 @@ export interface Workflow {
   transitions: Record<string, string[]>;
 }
 
+export interface StatusSnapshot {
+  id: string;
+  board_id: string;
+  snapshot_date: string;
+  status: string;
+  count: number;
+  created_at?: string;
+}
+
+export interface CFDDataPoint {
+  date: string;
+  [status: string]: number | string;
+}
+
+export interface CFDOptions {
+  from?: string;
+  to?: string;
+}
+
 export interface StorageAdapter {
   init(): Promise<void>;
-  query(sql: string, params?: any[]): Promise<any[]>;
-  exec(sql: string): Promise<void>;
+  close(): Promise<void>;
+  createBoard(data: any): Promise<any>;
+  getBoard(id: string): Promise<any>;
+  listBoards(): Promise<any[]>;
+  updateBoard(id: string, updates: any): Promise<any>;
+  deleteBoard(id: string): Promise<void>;
+  createTicket(data: any): Promise<any>;
+  getTicket(id: string): Promise<any>;
+  listTickets(query: any): Promise<any[]>;
+  updateTicket(id: string, updates: any): Promise<any>;
+  deleteTicket(id: string): Promise<void>;
+  bulkUpdateTickets(ids: string[], updates: any): Promise<void>;
+  createComment(data: any): Promise<any>;
+  listComments(ticketId: string): Promise<any[]>;
+  deleteComment(id: string): Promise<void>;
+  createActivity(data: any): Promise<any>;
+  listActivities(ticketId: string, limit?: number): Promise<any[]>;
+  getWorkflow(id: string): Promise<any>;
+  createWorkflow(data: any): Promise<any>;
+  takeSnapshot(boardId: string, date?: string): Promise<StatusSnapshot[]>;
+  getCFDData(boardId: string, options?: CFDOptions): Promise<CFDDataPoint[]>;
+  backfillSnapshots(boardId: string, options?: CFDOptions): Promise<StatusSnapshot[]>;
+}
+
+export class SQLiteAdapter implements StorageAdapter {
+  constructor(dbPath?: string);
+  init(): Promise<SQLiteAdapter>;
+  close(): Promise<void>;
+  export(): Uint8Array;
+  import(data: Uint8Array): Promise<void>;
+  createBoard(data: any): Promise<any>;
+  getBoard(id: string): Promise<any>;
+  listBoards(): Promise<any[]>;
+  updateBoard(id: string, updates: any): Promise<any>;
+  deleteBoard(id: string): Promise<void>;
+  createTicket(data: any): Promise<any>;
+  getTicket(id: string): Promise<any>;
+  listTickets(query: any): Promise<any[]>;
+  updateTicket(id: string, updates: any): Promise<any>;
+  deleteTicket(id: string): Promise<void>;
+  bulkUpdateTickets(ids: string[], updates: any): Promise<void>;
+  createComment(data: any): Promise<any>;
+  listComments(ticketId: string): Promise<any[]>;
+  deleteComment(id: string): Promise<void>;
+  createActivity(data: any): Promise<any>;
+  listActivities(ticketId: string, limit?: number): Promise<any[]>;
+  getWorkflow(id: string): Promise<any>;
+  createWorkflow(data: any): Promise<any>;
+  takeSnapshot(boardId: string, date?: string): Promise<StatusSnapshot[]>;
+  getCFDData(boardId: string, options?: CFDOptions): Promise<CFDDataPoint[]>;
+  backfillSnapshots(boardId: string, options?: CFDOptions): Promise<StatusSnapshot[]>;
+}
+
+export class PostgreSQLAdapter implements StorageAdapter {
+  constructor(connectionString: string);
+  init(): Promise<PostgreSQLAdapter>;
+  close(): Promise<void>;
+  createBoard(data: any): Promise<any>;
+  getBoard(id: string): Promise<any>;
+  listBoards(): Promise<any[]>;
+  updateBoard(id: string, updates: any): Promise<any>;
+  deleteBoard(id: string): Promise<void>;
+  createTicket(data: any): Promise<any>;
+  getTicket(id: string): Promise<any>;
+  listTickets(query: any): Promise<any[]>;
+  updateTicket(id: string, updates: any): Promise<any>;
+  deleteTicket(id: string): Promise<void>;
+  bulkUpdateTickets(ids: string[], updates: any): Promise<void>;
+  createComment(data: any): Promise<any>;
+  listComments(ticketId: string): Promise<any[]>;
+  deleteComment(id: string): Promise<void>;
+  createActivity(data: any): Promise<any>;
+  listActivities(ticketId: string, limit?: number): Promise<any[]>;
+  getWorkflow(id: string): Promise<any>;
+  createWorkflow(data: any): Promise<any>;
+  takeSnapshot(boardId: string, date?: string): Promise<StatusSnapshot[]>;
+  getCFDData(boardId: string, options?: CFDOptions): Promise<CFDDataPoint[]>;
+  backfillSnapshots(boardId: string, options?: CFDOptions): Promise<StatusSnapshot[]>;
 }
 
 export interface KanbanColumn {
@@ -139,6 +234,11 @@ export default class TicketKit {
   // Workflows
   getWorkflow(workflowId: string): Workflow | undefined;
   listWorkflows(): Workflow[];
+
+  // CFD (Cumulative Flow Diagram) Reports
+  takeSnapshot(boardId: string, date?: string): Promise<StatusSnapshot[]>;
+  getCFDData(boardId: string, options?: CFDOptions): Promise<CFDDataPoint[]>;
+  backfillSnapshots(boardId: string, options?: CFDOptions): Promise<StatusSnapshot[]>;
 
   // Storage
   close(): Promise<void>;
